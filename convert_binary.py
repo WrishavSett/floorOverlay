@@ -57,11 +57,11 @@ def convert_to_binary_carpet(carpet_img_path, temp_path):
     return binary_carpet_path
 
 def main():
-    room_mask_path = convert_to_binary_mask("../floorOverlay/inputRoom/room4.jpg", temp_path="../floorOverlay/temporary")
-    print(room_mask_path)
+    room_bin_mask_path = convert_to_binary_mask("../floorOverlay/inputRoom/room4.jpg", temp_path="../floorOverlay/temporary")
+    print(room_bin_mask_path)
     
-    carpet_mask_path = convert_to_binary_carpet("../floorOverlay/carpet/carpet1.jpg", temp_path="../floorOverlay/temporary")
-    print(carpet_mask_path)
+    carpet_original_bin_mask_path = convert_to_binary_carpet("../floorOverlay/carpet/carpet1.jpg", temp_path="../floorOverlay/temporary")
+    print(carpet_original_bin_mask_path)
 
 
 if __name__ == "__main__":
