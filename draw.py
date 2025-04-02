@@ -1,3 +1,6 @@
+# Redundant as of now
+# Refer to find_centroid.py instead
+
 import cv2
 import numpy as np
 from mask_room_image import mask
@@ -109,7 +112,7 @@ def process_image(image_path, largest_contour_mask, marked_contour_mask):
     return topmost_y, bottommost_y, p1_max_y, p3_min_y, center_p2
 
 def main():
-    mask_path = mask(room_image_path="../floorOverlay/inputRoom/room6.jpg")
+    mask_path = mask(room_image_path="../floorOverlay/inputRoom/room4.jpg")
     # Run the function with file paths
     topmost_y, bottommost_y, p1_max_y, p3_min_y, center_p2 = process_image(
         image_path=mask_path,
