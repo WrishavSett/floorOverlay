@@ -5,20 +5,20 @@ from carpet_working import overlay_texture_on_floor
 
 def main():
     # Example paths for the images and output
-    room_image_path = "D:/Work/floorOverlay/inputRoom/image5.jpg"
-    design_image_path = "D:/Work/floorOverlay/inputTile/floor5.jpg"
+    room_image_path = "../floorOverlay/inputRoom/image5.jpg"
+    design_image_path = "../floorOverlay/inputTile/floor5.jpg"
     
     # Extract the room image name without extension
     room_image_name = os.path.splitext(os.path.basename(room_image_path))[0]
     design_image_name = os.path.splitext(os.path.basename(design_image_path))[0]
     
     # Define mask output path with new format
-    mask_output_dir = "D:/Work/floorOverlay/mask_out"
+    mask_output_dir = "../floorOverlay/mask_out"
     os.makedirs(mask_output_dir, exist_ok=True)
     mask_output_path = os.path.join(mask_output_dir, f"{room_image_name}_mask.jpg")
 
     # Define the output directory for final results
-    final_output_dir = "D:/Work/floorOverlay/final_out"
+    final_output_dir = "../floorOverlay/final_out"
     os.makedirs(final_output_dir, exist_ok=True)
     final_output_path = os.path.join(final_output_dir, f"{room_image_name}_{design_image_name}_output.jpg")
 

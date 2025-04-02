@@ -10,7 +10,7 @@ def mask(room_image_path):
     room_image_name = os.path.splitext(os.path.basename(room_image_path))[0]
     
     # Define mask output path with new format
-    mask_output_dir = "D:/Work/floorOverlay/mask_out"
+    mask_output_dir = "../floorOverlay/mask_out"
     os.makedirs(mask_output_dir, exist_ok=True)
     mask_output_path = os.path.join(mask_output_dir, f"{room_image_name}_mask.jpg")
 
@@ -28,7 +28,7 @@ def mask(room_image_path):
         return None
 
 def main():
-    path = mask("D:/Work/floorOverlay/inputRoom/room4.jpg")
+    path = mask("../floorOverlay/inputRoom/room4.jpg")
     print(path)
 
 if __name__ == "__main__":

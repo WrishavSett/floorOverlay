@@ -109,12 +109,12 @@ def process_image(image_path, largest_contour_mask, marked_contour_mask):
     return topmost_y, bottommost_y, p1_max_y, p3_min_y, center_p2
 
 def main():
-    mask_path = mask(room_image_path="D:/Work/floorOverlay/inputRoom/room6.jpg")
+    mask_path = mask(room_image_path="../floorOverlay/inputRoom/room6.jpg")
     # Run the function with file paths
     topmost_y, bottommost_y, p1_max_y, p3_min_y, center_p2 = process_image(
         image_path=mask_path,
-        largest_contour_mask='D:/Work/floorOverlay/temporary/largest_contour_mask.jpg',
-        marked_contour_mask='D:/Work/floorOverlay/temporary/marked_contour_mask.jpg'
+        largest_contour_mask='../floorOverlay/temporary/largest_contour_mask.jpg',
+        marked_contour_mask='../floorOverlay/temporary/marked_contour_mask.jpg'
     )
     print(f"Topmost y: {topmost_y}, Bottommost y: {bottommost_y}")
     print(f"Max y in Part 1: {p1_max_y}, Min y in Part 3: {p3_min_y}")
