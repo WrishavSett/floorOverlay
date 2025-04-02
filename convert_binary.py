@@ -24,8 +24,8 @@ def convert_to_binary_mask(room_image_path, temp_path):
     temp_output_dir = temp_path
     os.makedirs(temp_output_dir, exist_ok=True)
     
-    mask_image_name = os.path.splitext(os.path.basename(mask_image_path))[0]
-    binary_mask_path = os.path.join(temp_output_dir, f"{mask_image_name}_binary_mask.jpg")
+    # mask_image_name = os.path.splitext(os.path.basename(mask_image_path))[0] # Redundant, Generalised NAME
+    binary_mask_path = os.path.join(temp_output_dir, f"room_binary_mask.jpg")
     
     # Save the binary mask image
     cv2.imwrite(binary_mask_path, binary_mask)
@@ -48,7 +48,7 @@ def convert_to_binary_carpet(carpet_img_path, temp_path):
     os.makedirs(temp_output_dir, exist_ok=True)
     
     carpet_image_name = os.path.splitext(os.path.basename(carpet_img_path))[0]
-    binary_carpet_path = os.path.join(temp_output_dir, f"{carpet_image_name}_binary_mask.jpg")
+    binary_carpet_path = os.path.join(temp_output_dir, f"carpet_binary_mask.jpg")
     
     # Save the binary carpet image
     cv2.imwrite(binary_carpet_path, binary_carpet)

@@ -5,8 +5,8 @@ import os
 import cv2
 import numpy as np
 
-def scale_bin_carpet(room_img_path, carpet_img_path, temp_path):
-    original_carpet_binary_path = convert_to_binary_carpet(carpet_img_path, temp_path)
+def scale_carpet(room_img_path, carpet_img_path, temp_path):
+    # original_carpet_binary_path = convert_to_binary_carpet(carpet_img_path, temp_path)
     
     ref_image = cv2.imread(room_img_path)
     ref_height, ref_width = ref_image.shape[:2]
@@ -16,7 +16,8 @@ def scale_bin_carpet(room_img_path, carpet_img_path, temp_path):
     max_height = max(1, ref_height // 5)
 
     # Load the input image
-    img = cv2.imread(original_carpet_binary_path)
+    # img = cv2.imread(original_carpet_binary_path)
+    img = cv2.imread(carpet_img_path)
     img_height, img_width = img.shape[:2]
 
     # Compute scaling factor while preserving aspect ratio
@@ -34,13 +35,15 @@ def scale_bin_carpet(room_img_path, carpet_img_path, temp_path):
     os.makedirs(output_folder, exist_ok=True)
 
     # Define output file path
-    scaled_carpet_binary_path = os.path.join(output_folder, "scaled_carpet_binary_image.jpg")
+    # scaled_carpet_binary_path = os.path.join(output_folder, "scaled_carpet_binary_image.jpg")
+    scaled_carpet_path = os.path.join(output_folder, "scaled_carpet_image.jpg")
+
 
     # Save the resized image
-    cv2.imwrite(scaled_carpet_binary_path, resized_img)
-    print(f"Resized image saved as {scaled_carpet_binary_path} with dimensions {new_width}x{new_height}")
+    cv2.imwrite(scaled_carpet_path, resized_img)
+    print(f"Resized image saved as {scaled_carpet_path} with dimensions {new_width}x{new_height}")
 
-    return scaled_carpet_binary_path
+    return scaled_carpet_path
 
 def create_black_image(room_img_path, temp_path):
     # Load the reference image to get its dimensions
@@ -67,7 +70,7 @@ def place_on_black(room_img_path, carpet_img_path, temp_path):
     center_of_mask = find_and_mark_floor_center(room_img_path, temp_path)
     x, y = center_of_mask
     background_path = create_black_image(room_img_path, temp_path)
-    foreground_path = scale_bin_carpet(room_img_path, carpet_img_path, temp_path)
+    foreground_path = scale_carpet(room_img_path, carpet_img_path, temp_path)
 
     # Load background (background)
     background = cv2.imread(background_path)
@@ -103,7 +106,7 @@ def place_on_black(room_img_path, carpet_img_path, temp_path):
     background[y1_start:y1_end, x1_start:x1_end] = foreground[:y1_end - y1_start, :x1_end - x1_start]
 
     # Define output file path
-    overlayed_binary_carpet_path = os.path.join(temp_path, "overlayed_binary_carpet.jpg")
+    overlayed_binary_carpet_path = os.path.join(temp_path, "overlayed_carpet.jpg")
 
     # Save the final image
     cv2.imwrite(overlayed_binary_carpet_path, background)
@@ -112,7 +115,7 @@ def place_on_black(room_img_path, carpet_img_path, temp_path):
     return overlayed_binary_carpet_path
 
 def main():
-    room_img_path = "D:/Wrishav/floorOverlay/inputRoom/room6.jpg"
+    room_img_path = "D:/Wrishav/floorOverlay/inputRoom/room4.jpg"
     carpet_img_path = "D:/Wrishav/floorOverlay/carpet/carpet2.jpg"
     temp_folder_path = "D:/Wrishav/floorOverlay/temporary"
     overlayed_binary_carpet_path = place_on_black(room_img_path, carpet_img_path, temp_folder_path)
