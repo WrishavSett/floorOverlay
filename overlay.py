@@ -13,13 +13,19 @@ def adjust_carpet_perspective(carpet_image_path, temp_path):
     src_pts = np.float32([[0, 0], [w, 0], [w, h], [0, h]])
 
     # Compute the new upper width to form a 135-degree trapezoid
-    offset = h // 2  # This defines how much the top should be shrunk
-    new_w_top = w - 2 * offset  # Ensure both sides shrink equally
+    # offset = h // 2  # This defines how much the top should be shrunk
+    # new_w_top = w - 2 * offset  # Ensure both sides shrink equally
 
-    # Define the destination points (trapezoidal shape)
+    # Reduce the offset to achieve 110 degrees (less shrinking)
+    offset = h // 4  # Reduced from h // 2 to create a wider top
+
+    # Compute new upper width
+    new_w_top = w - 2 * offset
+
+    # Define the destination points for the new perspective
     dst_pts = np.float32([
-        [offset, 0],         # Top-left (shifted inward)
-        [w - offset, 0],     # Top-right (shifted inward)
+        [offset, 0],         # Top-left (shifted inward slightly)
+        [w - offset, 0],     # Top-right (shifted inward slightly)
         [w, h],              # Bottom-right (unchanged)
         [0, h]               # Bottom-left (unchanged)
     ])
@@ -30,13 +36,16 @@ def adjust_carpet_perspective(carpet_image_path, temp_path):
     # Apply the perspective transformation
     warped = cv2.warpPerspective(image, matrix, (w, h))
 
-    warped_img_path = os.path.join(temp_path,"warped_carpet_image.jpg")
-    cv2.imwrite(warped_img_path,warped)
+    warped_img_path = os.path.join(temp_path, "warped_carpet_image.jpg")
+    cv2.imwrite(warped_img_path, warped)
 
     return warped_img_path
 
-def overlay_image(room_img_path, warped_carpet_img_path, temp_path):
+def overlay_image(room_img_path, warped_carpet_img_path, temp_path, output_path="../floorOverlay/final_out"):
     room_img = cv2.imread(room_img_path)
+    # Extract the room image name without extension
+    room_image_name = os.path.splitext(os.path.basename(room_img_path))[0]
+
     mask_img_path = mask(room_img_path)
     mask_img = cv2.imread(mask_img_path)
 
@@ -54,13 +63,13 @@ def overlay_image(room_img_path, warped_carpet_img_path, temp_path):
     result = np.where(tmp_result == 255,overlayed_carpet_img,room_img)
 
     
-    result_img_path = os.path.join(temp_path, "final_overlayed_carpet_.jpg")
+    result_img_path = os.path.join(output_path, f"{room_image_name}_final_overlayed_carpet_.jpg")
     cv2.imwrite(result_img_path, result)
 
     return result_img_path
 
 def main():
-    room_img_path = "D:/Wrishav/floorOverlay/inputRoom/room6.jpg"
+    room_img_path = "D:/Wrishav/floorOverlay/inputRoom/room4.jpg"
     carpet_img_path = "D:/Wrishav/floorOverlay/carpet/carpet2.jpg"
     temp_folder_path = "D:/Wrishav/floorOverlay/temporary"
     
