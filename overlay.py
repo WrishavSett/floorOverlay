@@ -60,7 +60,7 @@ def overlay_image(room_img_path, warped_carpet_img_path, temp_path):
     return result_img_path
 
 def main():
-    room_img_path = "D:/Wrishav/floorOverlay/inputRoom/room4.jpg"
+    room_img_path = "D:/Wrishav/floorOverlay/inputRoom/room6.jpg"
     carpet_img_path = "D:/Wrishav/floorOverlay/carpet/carpet2.jpg"
     temp_folder_path = "D:/Wrishav/floorOverlay/temporary"
     
