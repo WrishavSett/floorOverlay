@@ -63,13 +63,13 @@ def overlay_image(room_img_path, warped_carpet_img_path, temp_path, output_path=
     result = np.where(tmp_result == 255,overlayed_carpet_img,room_img)
 
     
-    result_img_path = os.path.join(output_path, f"{room_image_name}_final_overlayed_carpet_.jpg")
+    result_img_path = os.path.join(output_path, f"final_overlayed_carpet_{room_image_name}.jpg")
     cv2.imwrite(result_img_path, result)
 
     return result_img_path
 
 def main():
-    room_img_path = "D:/Wrishav/floorOverlay/inputRoom/room4.jpg"
+    room_img_path = "D:/Wrishav/floorOverlay/inputRoom/room1.jpg"
     carpet_img_path = "D:/Wrishav/floorOverlay/carpet/carpet2.jpg"
     temp_folder_path = "D:/Wrishav/floorOverlay/temporary"
     
