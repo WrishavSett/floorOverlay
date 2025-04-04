@@ -18,7 +18,10 @@ def convert_to_binary_mask(room_image_path, temp_path):
     
     # Convert the mask to binary (thresholding)
     blurred_mask = cv2.GaussianBlur(mask_image, (5, 5), 0)
-    _, binary_mask = cv2.threshold(blurred_mask, 1, 255, cv2.THRESH_BINARY)
+    # _, binary_mask = cv2.threshold(blurred_mask, 1, 255, cv2.THRESH_BINARY)
+    binary_mask = cv2.adaptiveThreshold(
+        blurred_mask, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2
+        )
     
     # Define output directory and filename
     temp_output_dir = temp_path
@@ -41,7 +44,12 @@ def convert_to_binary_carpet(carpet_img_path, temp_path):
         return None
     
     # Convert the carpet image to binary (thresholding)
-    _, binary_carpet = cv2.threshold(carpet_image, 1, 255, cv2.THRESH_BINARY)
+    blurred_carpet = cv2.GaussianBlur(carpet_image, (5, 5), 0)
+    # _, binary_carpet = cv2.threshold(blurred_carpet, 1, 255, cv2.THRESH_BINARY)
+    binary_carpet = cv2.adaptiveThreshold(
+        blurred_carpet, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2
+        )
+
     
     # Define output directory and filename
     temp_output_dir = temp_path
