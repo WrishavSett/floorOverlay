@@ -139,9 +139,9 @@ def overlay_carpet_on_room(room_img_path, carpet_img_path, output_path="../floor
     print(f"015 Final carpet overlay saved to: {final_output_path}")
 
 def main():
-    room_img_path = "D:/Wrishav/floorOverlay/inputRoom/room6.jpg"
-    carpet_img_path = "D:/Wrishav/floorOverlay/inputCarpet/carpet2.jpg"
-    temp_folder_path = "D:/Wrishav/floorOverlay/temporary"
+    room_img_path = "../floorOverlay/inputRoom/room4.jpg"
+    carpet_img_path = "../floorOverlay/inputCarpet/carpet2.jpg"
+    temp_folder_path = "../floorOverlay/temporary"
     
     # warped_carpet_image_path = adjust_carpet_perspective(carpet_img_path, temp_folder_path)
     # overlay_image(room_img_path, warped_carpet_image_path)
