@@ -9,8 +9,8 @@ from convert_binary import convert_to_binary_mask, convert_to_binary_carpet
 from carpet_circle import carpet_ellipse_and_center
 from find_centroid import find_and_mark_floor_center
 
-def adjust_carpet_perspective(carpet_image_path, temp_path="../floorOverlay/temporary"):
-    image = cv2.imread(carpet_image_path)
+def adjust_carpet_perspective(carpet_img_path, temp_path="../floorOverlay/temporary"):
+    image = cv2.imread(carpet_img_path)
     h, w = image.shape[:2]
 
     # Define the source points (corners of the original image)
@@ -45,7 +45,8 @@ def adjust_carpet_perspective(carpet_image_path, temp_path="../floorOverlay/temp
 
     return warped_img_path
 
-def overlay_image(room_img_path, warped_carpet_img_path, output_path="../floorOverlay/final_out"):
+def overlay_image(room_img_path, carpet_img_path, output_path="../floorOverlay/final_out"):
+    warped_carpet_img_path = adjust_carpet_perspective(carpet_img_path)
     room_img = cv2.imread(room_img_path)
     # Extract the room image name without extension
     room_image_name = os.path.splitext(os.path.basename(room_img_path))[0]
@@ -143,8 +144,7 @@ def main():
     carpet_img_path = "../floorOverlay/inputCarpet/carpet2.jpg"
     temp_folder_path = "../floorOverlay/temporary"
     
-    # warped_carpet_image_path = adjust_carpet_perspective(carpet_img_path, temp_folder_path)
-    # overlay_image(room_img_path, warped_carpet_image_path)
+    # overlay_image(room_img_path, carpet_img_path)
     overlay_carpet_on_room(room_img_path, carpet_img_path)
 
 if __name__ == "__main__":
