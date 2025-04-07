@@ -1,3 +1,5 @@
+# 012
+
 import os
 import cv2
 from mask_room_image import mask
