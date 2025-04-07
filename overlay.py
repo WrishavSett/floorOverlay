@@ -140,7 +140,7 @@ def overlay_carpet_on_room(room_img_path, carpet_img_path, output_path="../floor
 
 def main():
     room_img_path = "D:/Wrishav/floorOverlay/inputRoom/room6.jpg"
-    carpet_img_path = "D:/Wrishav/floorOverlay/carpet/carpet2.jpg"
+    carpet_img_path = "D:/Wrishav/floorOverlay/inputCarpet/carpet2.jpg"
     temp_folder_path = "D:/Wrishav/floorOverlay/temporary"
     
     # warped_carpet_image_path = adjust_carpet_perspective(carpet_img_path, temp_folder_path)
