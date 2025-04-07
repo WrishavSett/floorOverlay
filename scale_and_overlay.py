@@ -1,13 +1,11 @@
 # 014
 
-from convert_binary import convert_to_binary_mask, convert_to_binary_carpet
-from mask_room_image import mask
 from find_centroid import find_and_mark_floor_center
 import os
 import cv2
 import numpy as np
 
-def scale_carpet(room_img_path, carpet_img_path, temp_path):
+def scale_carpet(room_img_path, carpet_img_path, temp_path="../floorOverlay/temporary"):
     # original_carpet_binary_path = convert_to_binary_carpet(carpet_img_path, temp_path)
     
     ref_image = cv2.imread(room_img_path)
@@ -45,11 +43,11 @@ def scale_carpet(room_img_path, carpet_img_path, temp_path):
 
     # Save the resized image
     cv2.imwrite(scaled_carpet_path, resized_img)
-    print(f"Resized image saved as {scaled_carpet_path} with dimensions {new_width}x{new_height}")
+    print(f"014 Resized image saved as {scaled_carpet_path} with dimensions {new_width}x{new_height}")
 
     return scaled_carpet_path
 
-def create_black_image(room_img_path, temp_path):
+def create_black_image(room_img_path, temp_path="../floorOverlay/temporary"):
     # Load the reference image to get its dimensions
     ref_img = cv2.imread(room_img_path)
     ref_height, ref_width = ref_img.shape[:2]
@@ -66,11 +64,11 @@ def create_black_image(room_img_path, temp_path):
 
     # Save the black image
     cv2.imwrite(black_blank_img_path, black_img)
-    print(f"Black image saved as {black_blank_img_path} with dimensions {ref_width}x{ref_height}")
+    print(f"014 Black image saved as {black_blank_img_path} with dimensions {ref_width}x{ref_height}")
 
     return black_blank_img_path
 
-def place_on_black(room_img_path, carpet_img_path, temp_path):
+def place_on_black(room_img_path, carpet_img_path, temp_path="../floorOverlay/temporary"):
     center_of_mask = find_and_mark_floor_center(room_img_path, temp_path)
     x, y = center_of_mask
     background_path = create_black_image(room_img_path, temp_path)
@@ -114,15 +112,15 @@ def place_on_black(room_img_path, carpet_img_path, temp_path):
 
     # Save the final image
     cv2.imwrite(overlayed_binary_carpet_path, background)
-    print(f"Image saved as {overlayed_binary_carpet_path}")
+    print(f"014 Image saved as {overlayed_binary_carpet_path}")
 
     return overlayed_binary_carpet_path
 
 def main():
     room_img_path = "D:/Wrishav/floorOverlay/inputRoom/room4.jpg"
     carpet_img_path = "D:/Wrishav/floorOverlay/carpet/carpet2.jpg"
-    temp_folder_path = "D:/Wrishav/floorOverlay/temporary"
-    overlayed_binary_carpet_path = place_on_black(room_img_path, carpet_img_path, temp_folder_path)
+
+    overlayed_binary_carpet_path = place_on_black(room_img_path, carpet_img_path)
     print(f"Overlayed Binary Carpet Image Path: {overlayed_binary_carpet_path}")
 
 if __name__ == "__main__":

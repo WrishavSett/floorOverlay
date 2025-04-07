@@ -5,7 +5,7 @@ import numpy as np
 import os
 from mask_room_image import mask
 
-def find_and_mark_floor_center(room_img_path, output_folder="../floorOverlay/temporary"):
+def find_and_mark_floor_center(room_img_path, temp_path="../floorOverlay/temporary"):
     masked_image_path = mask(room_img_path)
     # Load the masked image
     image = cv2.imread(masked_image_path)
@@ -41,16 +41,16 @@ def find_and_mark_floor_center(room_img_path, output_folder="../floorOverlay/tem
             cv2.circle(image, (cx, cy), 5, (0, 255, 0), -1)  # Green circle
             
             # Ensure the output folder exists
-            os.makedirs(output_folder, exist_ok=True)
+            os.makedirs(temp_path, exist_ok=True)
             
             # Save the modified image
-            output_path = os.path.join(output_folder, "marked_masked_image.jpg")
+            output_path = os.path.join(temp_path, "marked_masked_image.jpg")
             cv2.imwrite(output_path, image)
 
-            print(f"Marked image saved at: {output_path}")
+            print(f"013 Marked image saved at: {output_path}")
             return (cx, cy)
 
-    print("No floor mask detected.")
+    print("013 No floor mask detected.")
     return None
 
 def main():
@@ -59,9 +59,9 @@ def main():
     center_point = find_and_mark_floor_center(room_image_path)
 
     if center_point:
-        print(f"Center of the floor mask: {center_point}")
+        print(f"013 Center of the floor mask: {center_point}")
     else:
-        print("Could not determine the center.")
+        print("013 Could not determine the center.")
 
 if __name__ == "__main__":
     main()

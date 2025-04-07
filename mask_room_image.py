@@ -23,10 +23,10 @@ def mask(room_image_path):
     success = infer(room_image_path, 0, mask_output_path)
     
     if success:
-        print("Inference completed successfully. Proceeding with texture application...")
+        print("011 Inference completed successfully. Proceeding with texture application...")
         return mask_output_path
     else:
-        print("Feature not found in image. Exiting...")
+        print("011 Feature not found in image. Exiting...")
         return None
 
 def main():
