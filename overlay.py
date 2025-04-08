@@ -168,7 +168,7 @@ def overlay_carpet_ellipse(room_img_path, carpet_img_path, output_path="../floor
 #     print(f"015 Final carpet overlay saved to: {final_output_path}")
 
 def main():
-    room_img_path = "../floorOverlay/inputRoom/room1.jpg"
+    room_img_path = "../floorOverlay/inputRoom/room6.jpg"
     carpet_img_path = "../floorOverlay/inputCarpet/carpet2.jpg"
     temp_folder_path = "../floorOverlay/temporary"
     
