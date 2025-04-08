@@ -14,8 +14,8 @@ def scale_carpet(room_img_path, carpet_img_path, temp_path="../floorOverlay/temp
     # Compute maximum allowable dimensions (1/5th of reference image)
     # max_width = max(1, ref_width // 5)
     # max_height = max(1, ref_height // 5)
-    max_width = max(1, ref_width // 4)
-    max_height = max(1, ref_height // 4)
+    max_width = max(1, ref_width // 3)
+    max_height = max(1, ref_height // 3)
 
     # Load the input image
     # img = cv2.imread(original_carpet_binary_path)

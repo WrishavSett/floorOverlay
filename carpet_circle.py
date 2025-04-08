@@ -6,19 +6,21 @@ import numpy as np
 import pandas as pd
 from scale_and_overlay import scale_carpet
 
-def carpet_scale_and_circle(room_img_path, carpet_img_path, temp_path="../floorOverlay/temporary"):
-    scaled_carpet_img_path = scale_carpet(room_img_path, carpet_img_path)
-    scaled_carpet_img = cv2.imread(scaled_carpet_img_path)
+def carpet_circle(carpet_img_path, temp_path="../floorOverlay/temporary"):
+    # scaled_carpet_img_path = scale_carpet(room_img_path, carpet_img_path)
+    # scaled_carpet_img = cv2.imread(scaled_carpet_img_path)
+    
+    carpet_img = cv2.imread(carpet_img_path)
     
     # Error handling for missing file
-    if scaled_carpet_img is None:
+    if carpet_img is None:
         raise FileNotFoundError(f"Could not read image at path: {carpet_img_path}")
     
-    height, width = scaled_carpet_img.shape[:2]
+    height, width = carpet_img.shape[:2]
 
     # Add alpha channel if missing
-    if scaled_carpet_img.shape[2] == 3:
-        scaled_carpet_img = cv2.cvtColor(scaled_carpet_img, cv2.COLOR_BGR2BGRA)
+    if carpet_img.shape[2] == 3:
+        carpet_img = cv2.cvtColor(carpet_img, cv2.COLOR_BGR2BGRA)
 
     center = (width // 2, height // 2)
     radius = min(width, height) // 2
@@ -27,7 +29,7 @@ def carpet_scale_and_circle(room_img_path, carpet_img_path, temp_path="../floorO
     circular_mask = np.zeros((height, width), dtype=np.uint8)
     cv2.circle(circular_mask, center, radius, 255, -1)
 
-    result = scaled_carpet_img.copy()
+    result = carpet_img.copy()
     result[:, :, 3] = circular_mask
 
     # Crop to bounding box of the circle
@@ -52,8 +54,8 @@ def carpet_scale_and_circle(room_img_path, carpet_img_path, temp_path="../floorO
 
     return cropped_carpet_path
 
-def carpet_ellipse_and_center(room_img_path, carpet_img_path, temp_path="../floorOverlay/temporary"):
-    cropped_carpet_path = carpet_scale_and_circle(room_img_path, carpet_img_path)
+def carpet_ellipse_and_center(carpet_img_path, temp_path="../floorOverlay/temporary"):
+    cropped_carpet_path = carpet_circle(carpet_img_path)
     img = cv2.imread(cropped_carpet_path, cv2.IMREAD_UNCHANGED)
     height, width = img.shape[:2]
 
@@ -129,11 +131,10 @@ def carpet_ellipse_and_center(room_img_path, carpet_img_path, temp_path="../floo
     cv2.imwrite(carpet_ellipse_path, warped)
     print(f"016 Horizontally-stretched 3D perspective carpet saved to {carpet_ellipse_path}")
 
-    return carpet_ellipse_path ,center
+    return carpet_ellipse_path, center
 
 def main():
-    carpet_ellipse_and_center("../floorOverlay/inputRoom/room5.jpg",
-                              "../floorOverlay/inputCarpet/carpet2.jpg")
+    carpet_ellipse_and_center("../floorOverlay/inputCarpet/carpet2.jpg")
 
 if __name__ == "__main__":
     main()

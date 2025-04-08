@@ -68,7 +68,35 @@ def overlay_carpet_trapezoid(room_img_path, carpet_img_path, output_path="../flo
     result = np.where(tmp_result == 255, overlayed_carpet_img,room_img)
 
     
-    result_img_path = os.path.join(output_path, f"overlayed_carpet_{room_image_name}.jpg")
+    result_img_path = os.path.join(output_path, f"overlayed_carpet_t_{room_image_name}.jpg")
+    cv2.imwrite(result_img_path, result)
+
+    return result_img_path
+
+def overlay_carpet_ellipse(room_img_path, carpet_img_path, output_path="../floorOverlay/final_out"):
+    ellipse_carpet_path, ellipse_carpet_center = carpet_ellipse_and_center(carpet_img_path)
+    room_img = cv2.imread(room_img_path)
+    # Extract the room image name without extension
+    room_image_name = os.path.splitext(os.path.basename(room_img_path))[0]
+
+    # mask_img_path = mask(room_img_path)
+    # mask_img = cv2.imread(mask_img_path)
+
+    bin_mask_img_path = convert_to_binary_mask(room_img_path)
+    bin_mask_img = cv2.imread(bin_mask_img_path)
+
+    overlayed_carpet_img_path = place_on_black(room_img_path, ellipse_carpet_path)
+    overlayed_carpet_img = cv2.imread(overlayed_carpet_img_path)
+
+    overlayed_bin_carpet_img_path = convert_to_binary_carpet(overlayed_carpet_img_path)
+    overlayed_bin_carpet_img = cv2.imread(overlayed_bin_carpet_img_path)
+
+    # Bitwise AND between binary masked room image and overlayed carpet image
+    tmp_result = cv2.bitwise_and(bin_mask_img, overlayed_bin_carpet_img)
+    result = np.where(tmp_result == 255, overlayed_carpet_img,room_img)
+
+    
+    result_img_path = os.path.join(output_path, f"overlayed_carpet_e_{room_image_name}.jpg")
     cv2.imwrite(result_img_path, result)
 
     return result_img_path
@@ -140,12 +168,12 @@ def overlay_carpet_trapezoid(room_img_path, carpet_img_path, output_path="../flo
 #     print(f"015 Final carpet overlay saved to: {final_output_path}")
 
 def main():
-    room_img_path = "../floorOverlay/inputRoom/room4.jpg"
+    room_img_path = "../floorOverlay/inputRoom/room1.jpg"
     carpet_img_path = "../floorOverlay/inputCarpet/carpet2.jpg"
     temp_folder_path = "../floorOverlay/temporary"
     
     overlay_carpet_trapezoid(room_img_path, carpet_img_path)
-    # overlay_carpet_ellipse(room_img_path, carpet_img_path)
+    overlay_carpet_ellipse(room_img_path, carpet_img_path)
 
 if __name__ == "__main__":
     main()
