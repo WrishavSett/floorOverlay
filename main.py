@@ -7,8 +7,8 @@ from carpet_working import overlay_texture_on_floor
 
 def main():
     # Example paths for the images and output
-    room_image_path = "../floorOverlay/inputRoom/image5.jpg"
-    design_image_path = "../floorOverlay/inputTile/floor5.jpg"
+    room_image_path = "../floorOverlay/inputRoom/room1.jpg"
+    design_image_path = "../floorOverlay/inputTile/tile1.jpg"
     
     # Extract the room image name without extension
     room_image_name = os.path.splitext(os.path.basename(room_image_path))[0]
