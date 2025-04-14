@@ -3,11 +3,9 @@
 import os
 import cv2
 import numpy as np
-from mask_room_image import mask
-from scale_and_overlay import place_on_black, create_black_image
+from scale_and_overlay import place_on_black
 from convert_binary import convert_to_binary_mask, convert_to_binary_carpet
 from carpet_circle import carpet_ellipse_and_center
-from find_centroid import find_and_mark_floor_center
 
 def adjust_carpet_perspective(carpet_img_path, temp_path="../floorOverlay/temporary"):
     image = cv2.imread(carpet_img_path)
