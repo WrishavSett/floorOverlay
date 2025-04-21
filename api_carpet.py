@@ -1,3 +1,5 @@
+#017
+
 import os
 import cv2
 import base64
@@ -24,6 +26,10 @@ def encode_image_to_base64(image):
     """Convert an OpenCV image to a base64 string."""
     _, buffer = cv2.imencode(".jpg", image)
     return base64.b64encode(buffer).decode("utf-8")
+
+@app.route("/ping", methods=["GET"])
+def ping():
+    return jsonify({"status": "Carpet Overlay API is live"}), 200
 
 @app.route("/overlayCarpet", methods=["POST"])
 def overlay_carpet():

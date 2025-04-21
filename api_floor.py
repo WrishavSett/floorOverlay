@@ -31,7 +31,11 @@ def encode_image_to_base64(image):
     _, buffer = cv2.imencode(".jpg", image)
     return base64.b64encode(buffer).decode("utf-8")
 
-@app.route("/process", methods=["POST"])
+@app.route("/ping", methods=["GET"])
+def ping():
+    return jsonify({"status": "Floor Overlay API is live"}), 200
+
+@app.route("/overlayFloor", methods=["POST"])
 def process_images():
     try:
         data = request.json
