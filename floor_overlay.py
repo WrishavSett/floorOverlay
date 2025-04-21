@@ -67,7 +67,7 @@ def floor_prep(room_img_path, floor_img_path, height_mul, width_mul, temp="../fl
     base_img = cv2.imread(base_img_path)
     base_height, base_width = base_img.shape[:2]
 
-    tiled_floor_img_path = tiling(floor_img_path, 6, 8)
+    tiled_floor_img_path = tiling(floor_img_path, 10, 8)
 
     # Load tile image
     tile = cv2.imread(tiled_floor_img_path)
@@ -182,25 +182,32 @@ def crop_image(room_img_path, floor_img_path, height_mul, width_mul, temp="../fl
 
 
 #025
-def overlay(room_img_path, floor_img_path, height_mul, width_mul, temp="../floorOverlay/temporary"):
+def overlay(room_img_path, floor_img_path, height_mul, width_mul, final_out="../floorOverlay/final_out"):
     """
     returns: floor overlayed on mask
     """
     room_mask_path = masking(room_img_path)
+    name = os.path.splitext(os.path.basename(room_img_path))[0]
     mask = cv2.imread(room_mask_path)
     gray = cv2.cvtColor(mask, cv2.COLOR_RGB2GRAY)
-    blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+    blurred = cv2.GaussianBlur(gray, (35, 35), 0)
     _, thresh1 = cv2.threshold(blurred, 1, 255, cv2.THRESH_BINARY)
 
     tile_crop_path = crop_image(room_img_path, floor_img_path, height_mul, width_mul)
     room = cv2.imread(room_img_path)
     tile = cv2.imread(tile_crop_path)
+    
+    if room is None:
+        raise ValueError(f"025 Could not read room image at {room_img_path}")
+    if tile is None:
+        raise ValueError(f"025 Could not read cropped tile at {tile_crop_path}")
+    
     thresh2 = cv2.cvtColor(thresh1, cv2.COLOR_GRAY2BGR)
     result = np.where(thresh2 == 0, room, tile)
 
-    output_path = f"{temp}/final_output.jpg"
+    output_path = f"{final_out}/{name}_final_output.jpg"
     cv2.imwrite(output_path, result)
-    print(f"025 Final output image saved at {temp}")
+    print(f"025 Final output image saved at {output_path}")
     
     return output_path
 
