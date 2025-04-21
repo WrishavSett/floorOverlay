@@ -111,12 +111,12 @@ def floor_prep(room_img_path, floor_img_path, height_mul, width_mul, temp="../fl
 
 
 #023
-def masking(room_img_path, temp="../floorOverlay/temporary"):
+def masking(room_img_path, temp="../floorOverlay/mask_out"):
     """
     returns: room mask image
     """
     load_model()
-    room_name = os.path.basename(room_img_path).split(".")[0]
+    room_name = os.path.splitext(os.path.basename(room_img_path))[0]
     mask_output_path = f"{temp}/{room_name}_mask.jpg"
     infer(room_img_path, 0, mask_output_path)
     print(f"023 Masked floor image saved at {temp}")
