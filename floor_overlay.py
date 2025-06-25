@@ -115,7 +115,7 @@ def masking(room_img_path, temp="../floorOverlay/mask_out"):
     """
     returns: room mask image
     """
-    load_model()
+    # load_model()
     room_name = os.path.splitext(os.path.basename(room_img_path))[0]
     mask_output_path = f"{temp}/{room_name}_mask.jpg"
     infer(room_img_path, 0, mask_output_path)
@@ -165,7 +165,7 @@ def crop_image(room_img_path, floor_img_path, height_mul, width_mul, temp="../fl
         y2 = int(y2)
 
         # Check if coordinates are valid
-        if not (0 <= x1 < img.shape[1] and 0 <= y1 < img.shape[0] and 0 <= x2 < img.shape[1] and 0 <= y2 < img.shape[0] and x1 < x2 and y1 < y2):
+        if not (0 <= x1 < img.shape[1] and 0 <= y1 < img.shape[0] and 0 <= x2 < img.shape[1] and 0 <= y2 < img.shape[0] and x1 <= x2 and y1 <= y2):
             print("024 Error: Invalid coordinates. Please ensure that coordinates are within the image boundaries and x1 < x2 and y1 < y2.")
             return None
 

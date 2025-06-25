@@ -17,7 +17,7 @@ def mask(room_image_path):
     mask_output_path = os.path.join(mask_output_dir, f"{room_image_name}_mask.jpg")
 
     # Load the model
-    load_model()
+    # load_model()
 
     # Perform inference
     success = infer(room_image_path, 0, mask_output_path)
