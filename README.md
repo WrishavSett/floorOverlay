@@ -1,256 +1,321 @@
 
 # Carpet and Floor Overlay System
 
-This project provides a robust pipeline for applying carpets and floor textures onto room images using both deep learning and geometric transformation techniques. It includes a Flask-based API server and a suite of preprocessing, segmentation, transformation, and testing scripts.
+This repository provides a complete system for overlaying carpet and floor textures on room images using deep learning and geometric transformation techniques. It is designed to be used via a Flask-based REST API and includes utilities for preprocessing, inference, transformation, and batch testing.
 
 ---
 
 ## Table of Contents
 
-1. [Features](#features)
-2. [Project Structure](#project-structure)
-3. [Requirements](#requirements)
-4. [Modules Description](#modules-description)
-5. [How to Run](#how-to-run)
-6. [Testing](#testing)
-7. [Testing with Postman](#testing-with-postman)
-8. [Output](#output)
+1. [Overview](#overview)  
+2. [Features](#features)  
+3. [Project Structure](#project-structure)  
+4. [Requirements](#requirements)  
+5. [Installation](#installation)  
+6. [Module Descriptions](#module-descriptions)  
+7. [Running the Flask API](#running-the-flask-api)  
+8. [API Endpoints](#api-endpoints)  
+9. [Testing with Postman](#testing-with-postman)  
+10. [Batch Testing](#batch-testing)  
+11. [Outputs](#outputs)
+
+---
+
+## Overview
+
+This system is designed to provide realistic overlays of carpets and floor textures on indoor room images. The goal is to simulate interior decoration effects using advanced image processing techniques and deep learning models. The application supports API-based access for seamless integration into design workflows.
 
 ---
 
 ## Features
 
-- Carpet overlay using ellipse and trapezoidal warping
-- Floor texture mapping using:
-  - Deep learning (semantic segmentation with MaskFormer)
-  - Geometric computation (perspective transformations)
-- Batch testing support for multiple rooms, designs, and carpets
-- Flask REST API for external integration
-- Robust image preprocessing and transformation utilities
+- Carpet overlays using:
+  - Elliptical transformation
+  - Trapezoidal warping via homography
+
+- Floor overlays using:
+  - Deep learning segmentation (MaskFormer from HuggingFace)
+  - Computational geometric warping
+
+- Robust batch testing across combinations of rooms, carpets, and floor designs
+
+- Clean Flask-based API access for automated integration
+
+- Modular and extendable codebase
 
 ---
 
 ## Project Structure
 
-```
+```plaintext
 .
-├── app.py
-├── test_app.py
-├── carpet_circle.py
-├── carpet_working.py
-├── convert_binary.py
-├── find_centroid.py
-├── floor_mask_model.py
-├── floor_overlay.py
-├── mask_room_image.py
-├── overlay.py
-├── scale_and_overlay.py
+├── app.py                         # Main Flask API server
+├── test_app.py                    # Batch testing utility
+├── carpet_circle.py               # Elliptical carpet warping logic
+├── carpet_working.py              # Trapezoidal carpet overlay using contours and homography
+├── convert_binary.py              # Generates binary masks from images
+├── find_centroid.py               # Locates centroid of the floor region in a mask
+├── floor_mask_model.py           # Loads and runs MaskFormer for floor segmentation
+├── floor_overlay.py               # Full computational floor overlay using perspective warping
+├── mask_room_image.py             # Interface to run floor segmentation and save the mask
+├── overlay.py                     # Logic to combine carpet/floor overlays with room image
+├── scale_and_overlay.py           # Carpet placement and resizing logic
 ├── sample_images/
-│   ├── rooms/
 │   ├── carpets/
-│   └── designs/
-└── batch_outputs/
+│   ├── designs/
+│   └── rooms/
+├── batch_outputs/                 # Outputs from batch testing
+├── final_out/                     # Outputs from single API runs
+└── requirements.txt               # Dependencies
 ```
 
 ---
 
 ## Requirements
 
-Install dependencies via:
+Install dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-**Required Packages**:
-- Flask
-- OpenCV
-- NumPy
-- Torch
-- Transformers (HuggingFace)
-- Pillow
-- Pandas
-- Requests
-- Matplotlib
-- Numba
+### Required Libraries
+
+- Flask: Web API
+- OpenCV: Image processing
+- NumPy: Array operations
+- Torch: Deep learning
+- Transformers: HuggingFace pretrained models
+- Pillow: Image manipulation
+- Matplotlib: Visualization
+- Numba: Speed-up routines
+- Requests, Pandas: API and batch tools
 
 ---
 
-## Modules Description
+## Installation
 
-### 1. `app.py`
-Flask-based server exposing three main endpoints:
-- `/overlayCarpet` for applying a carpet (ellipse or trapezoid)
-- `/overlayFloor` using MaskFormer model
-- `/overlayFloorComputational` using geometric transforms
+1. Clone the repository:
 
-### 2. `floor_mask_model.py`
-- Loads and runs inference with `MaskFormerForInstanceSegmentation` from HuggingFace.
-- Generates segmentation masks identifying floor regions.
+```bash
+git clone https://github.com/your-username/carpet-overlay-system.git
+cd carpet-overlay-system
+```
 
-### 3. `mask_room_image.py`
-- Utility that calls `floor_mask_model.infer()` and returns the saved mask path.
+2. Install the dependencies:
 
-### 4. `convert_binary.py`
-- Converts room and carpet images into binary masks.
-- Useful for masking and boolean operations during overlay.
+```bash
+pip install -r requirements.txt
+```
 
-### 5. `find_centroid.py`
-- Locates the center of the detected floor region (assumed red mask) for placing carpets accurately.
+3. Place your sample images under:
 
-### 6. `carpet_circle.py`
-- Crops carpets into circular shapes and stretches them into ellipse form to simulate 3D perspective.
-
-### 7. `scale_and_overlay.py`
-- Handles carpet resizing and placement.
-- Places carpet on a black background aligned to the detected floor center.
-
-### 8. `overlay.py`
-- High-level logic to:
-  - Warp carpets into trapezoids or ellipses
-  - Apply binary mask-based overlay with the room image
-
-### 9. `carpet_working.py`
-- Uses mask and contour detection to warp tile textures using homography.
-- Aligns tile textures to detected floor regions.
-
-### 10. `floor_overlay.py`
-- Performs the full pipeline for geometric floor texture overlay.
-- Steps:
-  - Base image creation
-  - Tile image tiling
-  - Perspective transform
-  - Masking and cropping
-  - Final image compositing
-
-### 11. `test_app.py`
-- Batch testing script.
-- Sends base64-encoded images to API endpoints.
-- Supports combinations of room, carpet, and floor design.
-- Saves all results in the `batch_outputs/` directory.
+```plaintext
+sample_images/
+├── carpets/
+├── designs/
+└── rooms/
+```
 
 ---
 
-## How to Run
+## Module Descriptions
 
-### Step 1: Start the Flask Server
+### `app.py`
+
+- Hosts a Flask server with three endpoints:
+  - `/overlayCarpet`: Places a carpet image on a room floor.
+  - `/overlayFloor`: Uses semantic segmentation to extract floor mask and apply design.
+  - `/overlayFloorComputational`: Uses geometric warping to apply floor designs.
+- Handles decoding of base64 input images and encoding of output.
+
+---
+
+### `test_app.py`
+
+- Automates the process of testing all image combinations.
+- Uses Python's requests module to call APIs.
+- Saves output in `batch_outputs/`.
+
+---
+
+### `carpet_circle.py`
+
+- Converts rectangular carpets into ellipses.
+- Uses geometric scaling to simulate 3D perspective.
+- Outputs a warped elliptical carpet image on a black background.
+
+---
+
+### `scale_and_overlay.py`
+
+- Receives the carpet and room mask.
+- Rescales the carpet based on floor region size.
+- Aligns the carpet center with detected floor centroid.
+
+---
+
+### `overlay.py`
+
+- Coordinates different transformations and overlays:
+  - Calls binary converters, resizers, warpers.
+  - Applies binary masks and blends carpet with room.
+- Supports both ellipse and trapezoid carpet modes.
+
+---
+
+### `carpet_working.py`
+
+- Applies homography using room floor mask contours.
+- Warps carpet image into a trapezoidal shape.
+- Provides realism by simulating room angle.
+
+---
+
+### `convert_binary.py`
+
+- Uses OpenCV to threshold and binarize carpet and room images.
+- Masks are used to separate floor/carpet regions from the rest.
+
+---
+
+### `find_centroid.py`
+
+- Identifies the centroid of red pixels in binary masks.
+- Helps in accurate placement of carpets on floor area.
+
+---
+
+### `floor_mask_model.py`
+
+- Loads pretrained MaskFormer model from HuggingFace.
+- Performs semantic segmentation of floor region.
+- Returns binary floor mask for room image.
+
+---
+
+### `mask_room_image.py`
+
+- Wrapper around `floor_mask_model.py`.
+- Used to store and reuse generated floor masks.
+
+---
+
+### `floor_overlay.py`
+
+- Full computational pipeline:
+  - Tiles the design image.
+  - Applies a perspective transform.
+  - Masks to floor area and blends.
+- Simulates physical floor texture mapping without a DL model.
+
+---
+
+## Running the Flask API
 
 ```bash
 python app.py
 ```
 
-### Step 2: Send Requests
+Server runs on:
 
-You can use:
-- Postman
-- `test_app.py` for batch automation
+```
+http://127.0.0.1:5000
+```
 
-### Step 3: Run the Tester
+---
 
-```bash
-python test_app.py
+## API Endpoints
+
+### 1. `/overlayCarpet`
+
+**Method**: `POST`
+
+```json
+{
+  "room_image": "BASE64_ENCODED_ROOM",
+  "carpet_image": "BASE64_ENCODED_CARPET",
+  "overlay_type": "ellipse"  // or "trapezoid"
+}
+```
+
+### 2. `/overlayFloor`
+
+**Method**: `POST`
+
+```json
+{
+  "room_image": "BASE64_ENCODED_ROOM",
+  "design_image": "BASE64_ENCODED_FLOOR"
+}
+```
+
+### 3. `/overlayFloorComputational`
+
+**Method**: `POST`
+
+```json
+{
+  "room_image": "BASE64_ENCODED_ROOM",
+  "design_image": "BASE64_ENCODED_FLOOR",
+  "height_mul": 2,
+  "width_mul": 3
+}
+```
+
+**Response for all**: Base64-encoded output image:
+
+```json
+{
+  "final_output": "BASE64_ENCODED_OUTPUT_IMAGE"
+}
 ```
 
 ---
 
 ## Testing with Postman
 
-You can use [Postman](https://www.postman.com/) to manually test the API endpoints exposed by the Flask server.
-
-### 1. Start the Flask Server
-
-Run the server locally with:
+1. Start server:
 
 ```bash
 python app.py
 ```
 
-Ensure it's running at `http://127.0.0.1:5000`.
-
----
-
-### 2. Prepare Base64-Encoded Inputs
-
-Use an online tool like [https://www.base64-image.de/](https://www.base64-image.de/) or a Python script:
+2. Convert images to base64:
 
 ```python
 import base64
-
-with open("your_image.jpg", "rb") as img_file:
-    encoded = base64.b64encode(img_file.read()).decode('utf-8')
-    print(encoded)
+with open("image.jpg", "rb") as f:
+    print(base64.b64encode(f.read()).decode("utf-8"))
 ```
 
+3. In Postman, use:
+- Method: `POST`
+- URL: e.g. `http://127.0.0.1:5000/overlayCarpet`
+- Headers: `Content-Type: application/json`
+- Body: raw → JSON
+
 ---
 
-### 3. Set Up Requests in Postman
+## Batch Testing
 
-#### a. Carpet Overlay
-
-- **Endpoint**: `POST /overlayCarpet`
-- **URL**: `http://127.0.0.1:5000/overlayCarpet`
-- **Headers**:  
-  `Content-Type: application/json`
-- **Body (raw, JSON)**:
-```json
-{
-  "room_image": "BASE64_ROOM_IMAGE_STRING",
-  "carpet_image": "BASE64_CARPET_IMAGE_STRING",
-  "overlay_type": "ellipse"
-}
+```bash
+python test_app.py
 ```
 
----
-
-#### b. Model-Based Floor Overlay
-
-- **Endpoint**: `POST /overlayFloor`
-- **URL**: `http://127.0.0.1:5000/overlayFloor`
-- **Body**:
-```json
-{
-  "room_image": "BASE64_ROOM_IMAGE_STRING",
-  "design_image": "BASE64_DESIGN_IMAGE_STRING"
-}
-```
+- Loads all combinations of carpets, designs, rooms
+- Sends requests to appropriate endpoints
+- Outputs saved in `batch_outputs/`
 
 ---
 
-#### c. Computational Floor Overlay
+## Outputs
 
-- **Endpoint**: `POST /overlayFloorComputational`
-- **URL**: `http://127.0.0.1:5000/overlayFloorComputational`
-- **Body**:
-```json
-{
-  "room_image": "BASE64_ROOM_IMAGE_STRING",
-  "design_image": "BASE64_DESIGN_IMAGE_STRING",
-  "height_mul": 2,
-  "width_mul": 3
-}
-```
+- API outputs: `final_out/`
+- Batch outputs: `batch_outputs/`
 
 ---
 
-### 4. Visualize the Output
+## License
 
-- The response will contain a JSON object with a `final_output` field.
-- This value is a base64 string of the resulting image.
-- You can save it using a decoder like:
-
-```python
-import base64
-
-with open("output.jpg", "wb") as f:
-    f.write(base64.b64decode(FINAL_OUTPUT_STRING))
-```
-
----
-
-## Output
-
-- Final images with overlays are stored in:
-  - `final_out/` (when using API)
-  - `batch_outputs/` (when using `test_app.py`)
-
----
+MIT License
