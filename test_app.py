@@ -61,35 +61,65 @@ def batch_process():
 
     print(f"Found {len(rooms)} room images, {len(designs)} design images, {len(carpets)} carpet images.")
 
-    for room_path, design_path, carpet_path in product(rooms, designs, carpets):
+    # # Code to process all combinations of rooms, designs, and carpets
+    # for room_path, design_path, carpet_path in product(rooms, designs, carpets):
+    #     room_name = os.path.splitext(os.path.basename(room_path))[0]
+    #     design_name = os.path.splitext(os.path.basename(design_path))[0]
+    #     carpet_name = os.path.splitext(os.path.basename(carpet_path))[0]
+
+    #     print(f"\n🔵 Processing Room: {room_name}, Design: {design_name}, Carpet: {carpet_name}")
+
+    #     # Read base64 encodings
+    #     room_b64 = image_to_base64(room_path)
+    #     design_b64 = image_to_base64(design_path)
+    #     carpet_b64 = image_to_base64(carpet_path)
+
+    #     # 1. Carpet Overlay (Ellipse)
+    #     resp_carpet = send_overlay_carpet(room_b64, carpet_b64, overlay_type="ellipse")
+    #     if resp_carpet.status_code == 200:
+    #         save_path = os.path.join(OUTPUT_DIR, f"{room_name}_{carpet_name}_carpet_ellipse.jpg")
+    #         save_base64_image(resp_carpet.json()["final_output"], save_path)
+    #         print(f"✅ Saved: {save_path}")
+    #     else:
+    #         print(f"❌ Carpet overlay failed: {resp_carpet.json()}")
+
+    #     # 2. Carpet Overlay (Trapezoid)
+    #     resp_carpet_trap = send_overlay_carpet(room_b64, carpet_b64, overlay_type="trapezoid")
+    #     if resp_carpet_trap.status_code == 200:
+    #         save_path = os.path.join(OUTPUT_DIR, f"{room_name}_{carpet_name}_carpet_trapezoid.jpg")
+    #         save_base64_image(resp_carpet_trap.json()["final_output"], save_path)
+    #         print(f"✅ Saved: {save_path}")
+    #     else:
+    #         print(f"❌ Carpet trapezoid overlay failed: {resp_carpet_trap.json()}")
+
+    #     # 3. Model-based Floor Overlay
+    #     resp_floor_model = send_overlay_floor_model(room_b64, design_b64)
+    #     if resp_floor_model.status_code == 200:
+    #         save_path = os.path.join(OUTPUT_DIR, f"{room_name}_{design_name}_floor_model.jpg")
+    #         save_base64_image(resp_floor_model.json()["final_output"], save_path)
+    #         print(f"✅ Saved: {save_path}")
+    #     else:
+    #         print(f"❌ Floor model overlay failed: {resp_floor_model.json()}")
+
+    #     # # 4. Computational Floor Overlay
+    #     # resp_floor_comp = send_overlay_floor_computational(room_b64, design_b64)
+    #     # if resp_floor_comp.status_code == 200:
+    #     #     save_path = os.path.join(OUTPUT_DIR, f"{room_name}_{design_name}_floor_computational.jpg")
+    #     #     save_base64_image(resp_floor_comp.json()["final_output"], save_path)
+    #     #     print(f"✅ Saved: {save_path}")
+    #     # else:
+    #     #     print(f"❌ Floor computational overlay failed: {resp_floor_comp.json()}")
+
+    # Process all combinations of rooms and carpets
+    for room_path, design_path, in product(rooms, designs):
         room_name = os.path.splitext(os.path.basename(room_path))[0]
         design_name = os.path.splitext(os.path.basename(design_path))[0]
-        carpet_name = os.path.splitext(os.path.basename(carpet_path))[0]
 
-        print(f"\n🔵 Processing Room: {room_name}, Design: {design_name}, Carpet: {carpet_name}")
+        print(f"\n🔵 Processing Room: {room_name}, Design: {design_name}")
 
         # Read base64 encodings
         room_b64 = image_to_base64(room_path)
         design_b64 = image_to_base64(design_path)
-        carpet_b64 = image_to_base64(carpet_path)
-
-        # 1. Carpet Overlay (Ellipse)
-        resp_carpet = send_overlay_carpet(room_b64, carpet_b64, overlay_type="ellipse")
-        if resp_carpet.status_code == 200:
-            save_path = os.path.join(OUTPUT_DIR, f"{room_name}_{carpet_name}_carpet_ellipse.jpg")
-            save_base64_image(resp_carpet.json()["final_output"], save_path)
-            print(f"✅ Saved: {save_path}")
-        else:
-            print(f"❌ Carpet overlay failed: {resp_carpet.json()}")
-
-        # 2. Carpet Overlay (Trapezoid)
-        resp_carpet_trap = send_overlay_carpet(room_b64, carpet_b64, overlay_type="trapezoid")
-        if resp_carpet_trap.status_code == 200:
-            save_path = os.path.join(OUTPUT_DIR, f"{room_name}_{carpet_name}_carpet_trapezoid.jpg")
-            save_base64_image(resp_carpet_trap.json()["final_output"], save_path)
-            print(f"✅ Saved: {save_path}")
-        else:
-            print(f"❌ Carpet trapezoid overlay failed: {resp_carpet_trap.json()}")
 
         # 3. Model-based Floor Overlay
         resp_floor_model = send_overlay_floor_model(room_b64, design_b64)
@@ -99,15 +129,6 @@ def batch_process():
             print(f"✅ Saved: {save_path}")
         else:
             print(f"❌ Floor model overlay failed: {resp_floor_model.json()}")
-
-        # # 4. Computational Floor Overlay
-        # resp_floor_comp = send_overlay_floor_computational(room_b64, design_b64)
-        # if resp_floor_comp.status_code == 200:
-        #     save_path = os.path.join(OUTPUT_DIR, f"{room_name}_{design_name}_floor_computational.jpg")
-        #     save_base64_image(resp_floor_comp.json()["final_output"], save_path)
-        #     print(f"✅ Saved: {save_path}")
-        # else:
-        #     print(f"❌ Floor computational overlay failed: {resp_floor_comp.json()}")
 
 # ───────────────────────────────────────────────────────────── #
 
