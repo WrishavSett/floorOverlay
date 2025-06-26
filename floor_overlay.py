@@ -1,8 +1,11 @@
+# Computational code for floor overlaying
+# Redundant as of now
+
 import os
 import cv2
 import numpy as np
 import pandas as pd
-from floor_mask_model import load_model, infer
+from floor_mask_model import infer
 
 
 #021

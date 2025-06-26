@@ -4,7 +4,7 @@ import os
 import cv2
 import numpy as np
 import pandas as pd
-from scale_and_overlay import scale_carpet
+# from scale_and_overlay import scale_carpet
 
 def carpet_circle(carpet_img_path, temp_path="../floorOverlay/temporary"):
     # scaled_carpet_img_path = scale_carpet(room_img_path, carpet_img_path)

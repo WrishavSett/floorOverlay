@@ -9,7 +9,7 @@ from flask import Flask, request, jsonify
 from overlay import overlay_carpet_trapezoid, overlay_carpet_ellipse
 from floor_mask_model import load_model, infer
 from carpet_working import overlay_texture_on_floor
-from floor_overlay import overlay
+# from floor_overlay import overlay
 
 app = Flask(__name__)
 
@@ -106,37 +106,37 @@ def overlay_floor_model():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# ─── Computational Floor Overlay ────────────────────────────── #
-@app.route("/overlayFloorComputational", methods=["POST"])
-def overlay_floor_computational():
-    try:
-        data = request.json
-        room_image_b64 = data.get("room_image")
-        design_image_b64 = data.get("design_image")
-        height_mul = data.get("height_mul", 2)
-        width_mul = data.get("width_mul", 3)
+# # ─── Computational Floor Overlay ────────────────────────────── #
+# @app.route("/overlayFloorComputational", methods=["POST"])
+# def overlay_floor_computational():
+#     try:
+#         data = request.json
+#         room_image_b64 = data.get("room_image")
+#         design_image_b64 = data.get("design_image")
+#         height_mul = data.get("height_mul", 2)
+#         width_mul = data.get("width_mul", 3)
 
-        if not room_image_b64 or not design_image_b64:
-            return jsonify({"error": "Both room_image and design_image must be provided"}), 400
+#         if not room_image_b64 or not design_image_b64:
+#             return jsonify({"error": "Both room_image and design_image must be provided"}), 400
 
-        unique_id = str(uuid.uuid4())
-        room_path = os.path.join("inputRoom", f"room_{unique_id}.jpg")
-        design_path = os.path.join("inputTile", f"design_{unique_id}.jpg")
+#         unique_id = str(uuid.uuid4())
+#         room_path = os.path.join("inputRoom", f"room_{unique_id}.jpg")
+#         design_path = os.path.join("inputTile", f"design_{unique_id}.jpg")
 
-        room_img = decode_base64_to_image(room_image_b64)
-        design_img = decode_base64_to_image(design_image_b64)
-        cv2.imwrite(room_path, room_img)
-        cv2.imwrite(design_path, design_img)
+#         room_img = decode_base64_to_image(room_image_b64)
+#         design_img = decode_base64_to_image(design_image_b64)
+#         cv2.imwrite(room_path, room_img)
+#         cv2.imwrite(design_path, design_img)
 
-        final_path = overlay(room_path, design_path, height_mul, width_mul)
-        final_output = cv2.imread(final_path)
+#         final_path = overlay(room_path, design_path, height_mul, width_mul)
+#         final_output = cv2.imread(final_path)
 
-        if final_path:
-            return jsonify({"status": "success", "final_output": encode_image_to_base64(final_output)})
-        else:
-            return jsonify({"error": "Failed to generate final output"}), 500
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+#         if final_path:
+#             return jsonify({"status": "success", "final_output": encode_image_to_base64(final_output)})
+#         else:
+#             return jsonify({"error": "Failed to generate final output"}), 500
+#     except Exception as e:
+#         return jsonify({"error": str(e)}), 500
 
 # ───────────────────────────────────────────────────────────── #
 
