@@ -1,5 +1,5 @@
-# Computational code for floor overlaying
 # Redundant as of now
+# Computational code for floor overlaying
 
 import os
 import cv2
