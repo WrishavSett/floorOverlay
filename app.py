@@ -39,6 +39,37 @@ def ping():
     return jsonify({"status": "API is live"}), 200
 
 # ─── Carpet Overlay ─────────────────────────────────────────── #
+# @app.route("/overlayCarpet", methods=["POST"])
+# def overlay_carpet():
+#     try:
+#         data = request.json
+#         room_image_b64 = data.get("room_image")
+#         carpet_image_b64 = data.get("carpet_image")
+#         overlay_type = data.get("overlay_type", "ellipse")
+
+#         if not room_image_b64 or not carpet_image_b64:
+#             return jsonify({"error": "Both room_image and carpet_image must be provided"}), 400
+
+#         unique_id = str(uuid.uuid4())
+#         room_path = os.path.join("inputRoom", f"room_{unique_id}.jpg")
+#         carpet_path = os.path.join("inputCarpet", f"carpet_{unique_id}.jpg")
+
+#         room_img = decode_base64_to_image(room_image_b64)
+#         carpet_img = decode_base64_to_image(carpet_image_b64)
+
+#         cv2.imwrite(room_path, room_img)
+#         cv2.imwrite(carpet_path, carpet_img)
+
+#         if overlay_type == "ellipse":
+#             result_path = overlay_carpet_ellipse(room_path, carpet_path, output_path="final_out")
+#         else:
+#             result_path = overlay_carpet_trapezoid(room_path, carpet_path, output_path="final_out")
+
+#         result_img = cv2.imread(result_path)
+#         return jsonify({"status": "success", "final_output": encode_image_to_base64(result_img)})
+#     except Exception as e:
+#         return jsonify({"error": str(e)}), 500
+
 @app.route("/overlayCarpet", methods=["POST"])
 def overlay_carpet():
     try:
@@ -46,6 +77,7 @@ def overlay_carpet():
         room_image_b64 = data.get("room_image")
         carpet_image_b64 = data.get("carpet_image")
         overlay_type = data.get("overlay_type", "ellipse")
+        carpet_dimensions = data.get("carpet_dimensions", None)
 
         if not room_image_b64 or not carpet_image_b64:
             return jsonify({"error": "Both room_image and carpet_image must be provided"}), 400
@@ -61,9 +93,9 @@ def overlay_carpet():
         cv2.imwrite(carpet_path, carpet_img)
 
         if overlay_type == "ellipse":
-            result_path = overlay_carpet_ellipse(room_path, carpet_path, output_path="final_out")
+            result_path = overlay_carpet_ellipse(room_path, carpet_path, carpet_dimensions=carpet_dimensions, output_path="final_out")
         else:
-            result_path = overlay_carpet_trapezoid(room_path, carpet_path, output_path="final_out")
+            result_path = overlay_carpet_trapezoid(room_path, carpet_path, carpet_dimensions=carpet_dimensions, output_path="final_out")
 
         result_img = cv2.imread(result_path)
         return jsonify({"status": "success", "final_output": encode_image_to_base64(result_img)})
