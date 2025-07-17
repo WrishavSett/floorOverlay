@@ -6,7 +6,7 @@ import numpy as np
 from flask import Flask, request, jsonify
 
 # External imports from your modules
-from overlay import overlay_carpet_trapezoid, overlay_carpet_ellipse
+from overlay import overlay_carpet_trapezoid, overlay_carpet_ellipse, apply_transparency_to_black_background
 from floor_mask_model import load_model, infer
 from carpet_working import overlay_texture_on_floor
 # from floor_overlay import overlay
@@ -100,6 +100,57 @@ def overlay_carpet():
         result_img = cv2.imread(result_path)
         return jsonify({"status": "success", "final_output": encode_image_to_base64(result_img)})
     except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# ───────────────────────────────────────────────────────────── #
+# NEW ENDPOINT: /getTransparentCarpet (MODIFIED)
+# ───────────────────────────────────────────────────────────── #
+@app.route("/getTransparentCarpet", methods=["POST"])
+def get_transparent_carpet():
+    try:
+        data = request.json
+        room_image_b64 = data.get("room_image")
+        carpet_image_b64 = data.get("carpet_image")
+        overlay_type = data.get("overlay_type", "ellipse")
+        carpet_dimensions = data.get("carpet_dimensions", None)
+
+        if not room_image_b64 or not carpet_image_b64:
+            return jsonify({"error": "Both room_image and carpet_image must be provided"}), 400
+
+        unique_id = str(uuid.uuid4())
+        room_path = os.path.join("inputRoom", f"room_{unique_id}.jpg")
+        carpet_path = os.path.join("inputCarpet", f"carpet_{unique_id}.jpg")
+
+        room_img = decode_base64_to_image(room_image_b64)
+        carpet_img = decode_base64_to_image(carpet_image_b64)
+        cv2.imwrite(room_path, room_img)
+        cv2.imwrite(carpet_path, carpet_img)
+
+        # MODIFIED: Pass carpet_dimensions to apply_transparency_to_black_background
+        transparent_carpet_path = apply_transparency_to_black_background(
+            room_path,
+            carpet_path,
+            overlay_type=overlay_type,
+            carpet_dimensions=carpet_dimensions
+        )
+
+        if not transparent_carpet_path:
+            return jsonify({"error": "Failed to generate transparent carpet."}), 500
+
+        transparent_carpet_img = cv2.imread(transparent_carpet_path, cv2.IMREAD_UNCHANGED)
+        
+        encoded_room_img = encode_image_to_base64(room_img)
+        encoded_transparent_carpet = encode_image_to_base64(transparent_carpet_img)
+
+        return jsonify({
+            "status": "success",
+            "original_room_image": encoded_room_img,
+            "transparent_carpet_image": encoded_transparent_carpet
+        })
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
         return jsonify({"error": str(e)}), 500
 
 # ─── Model-Based Floor Overlay ──────────────────────────────── #
