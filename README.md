@@ -217,7 +217,7 @@ sample_images/
 python app.py
 ```
 
-Server runs on:
+Server runs on port:
 
 ```
 http://127.0.0.1:5000
