@@ -72,7 +72,7 @@ def apply_transparency_to_black_background(
 
     elif overlay_type.lower() in ["trapezoid", "t"]:
         type_abbr = "t"
-        print(f"Preparing trapezoidal carpet for transparency...")
+        print(f"015 Preparing trapezoidal carpet for transparency...")
         trapezoid_carpet_path = adjust_carpet_perspective(carpet_img_path, temp_path=temp_path)
         if not trapezoid_carpet_path:
             print("015 Failed to generate trapezoidal carpet. Aborting transparency application.")
@@ -344,11 +344,11 @@ def overlay_carpet_ellipse(room_img_path, carpet_img_path, carpet_dimensions=Non
 
 def main():
     room_img_path = "../floorOverlay/sample_images2/rooms/room1.jpg"
-    carpet_img_path = "../floorOverlay/sample_images2/carpets/carpet1.jpg"
+    carpet_img_path = "../floorOverlay/sample_images2/carpets/carpet2.jpg"
     temp_folder_path = "../floorOverlay/temporary"
     
-    overlay_carpet_trapezoid(room_img_path, carpet_img_path)
-    overlay_carpet_ellipse(room_img_path, carpet_img_path)
+    # overlay_carpet_trapezoid(room_img_path, carpet_img_path)
+    # overlay_carpet_ellipse(room_img_path, carpet_img_path)
     
     apply_transparency_to_black_background(
         room_img_path,
