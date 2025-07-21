@@ -72,48 +72,48 @@ def get_image_from_input_data(image_input_data):
 def ping():
     return jsonify({"status": "API is live"}), 200
 
-# ─── Carpet Overlay ─────────────────────────────────────────── #
-@app.route("/overlayCarpet", methods=["POST"])
-def overlay_carpet():
-    try:
-        data = request.json
-        room_image_data = data.get("room_image")    # Can be base64 or URL
-        carpet_image_data = data.get("carpet_image") # Can be base64 or URL
-        overlay_type = data.get("overlay_type", "ellipse")
-        carpet_dimensions = data.get("carpet_dimensions", None)
+# # ─── Carpet Overlay ─────────────────────────────────────────── #
+# @app.route("/overlayCarpet", methods=["POST"])
+# def overlay_carpet():
+#     try:
+#         data = request.json
+#         room_image_data = data.get("room_image")    # Can be base64 or URL
+#         carpet_image_data = data.get("carpet_image") # Can be base64 or URL
+#         overlay_type = data.get("overlay_type", "ellipse")
+#         carpet_dimensions = data.get("carpet_dimensions", None)
 
-        if not room_image_data or not carpet_image_data:
-            return jsonify({"error": "Both room_image and carpet_image must be provided"}), 400
+#         if not room_image_data or not carpet_image_data:
+#             return jsonify({"error": "Both room_image and carpet_image must be provided"}), 400
 
-        unique_id = str(uuid.uuid4())
-        room_path = os.path.join("inputRoom", f"room_{unique_id}.jpg")
-        carpet_path = os.path.join("inputCarpet", f"carpet_{unique_id}.jpg")
+#         unique_id = str(uuid.uuid4())
+#         room_path = os.path.join("inputRoom", f"room_{unique_id}.jpg")
+#         carpet_path = os.path.join("inputCarpet", f"carpet_{unique_id}.jpg")
 
-        # Process input images
-        room_img = get_image_from_input_data(room_image_data)
-        carpet_img = get_image_from_input_data(carpet_image_data)
+#         # Process input images
+#         room_img = get_image_from_input_data(room_image_data)
+#         carpet_img = get_image_from_input_data(carpet_image_data)
 
-        cv2.imwrite(room_path, room_img)
-        cv2.imwrite(carpet_path, carpet_img)
+#         cv2.imwrite(room_path, room_img)
+#         cv2.imwrite(carpet_path, carpet_img)
 
-        if overlay_type == "ellipse":
-            result_path = overlay_carpet_ellipse(room_path, carpet_path, carpet_dimensions=carpet_dimensions, output_path="final_out")
-        else:
-            result_path = overlay_carpet_trapezoid(room_path, carpet_path, carpet_dimensions=carpet_dimensions, output_path="final_out")
+#         if overlay_type == "ellipse":
+#             result_path = overlay_carpet_ellipse(room_path, carpet_path, carpet_dimensions=carpet_dimensions, output_path="final_out")
+#         else:
+#             result_path = overlay_carpet_trapezoid(room_path, carpet_path, carpet_dimensions=carpet_dimensions, output_path="final_out")
 
-        result_img = cv2.imread(result_path)
-        if result_img is None: # Added check for successful image read
-            raise RuntimeError(f"Failed to read result image from path: {result_path}")
-        return jsonify({"status": "success", "final_output": encode_image_to_base64(result_img)})
-    except Exception as e:
-        import traceback
-        traceback.print_exc() # Print traceback for debugging
-        return jsonify({"error": str(e)}), 500
+#         result_img = cv2.imread(result_path)
+#         if result_img is None: # Added check for successful image read
+#             raise RuntimeError(f"Failed to read result image from path: {result_path}")
+#         return jsonify({"status": "success", "final_output": encode_image_to_base64(result_img)})
+#     except Exception as e:
+#         import traceback
+#         traceback.print_exc() # Print traceback for debugging
+#         return jsonify({"error": str(e)}), 500
 
 # ───────────────────────────────────────────────────────────── #
 # NEW ENDPOINT: /getTransparentCarpet (MODIFIED)
 # ───────────────────────────────────────────────────────────── #
-@app.route("/getTransparentCarpet", methods=["POST"])
+@app.route("/overlayCarpet", methods=["POST"])
 def get_transparent_carpet():
     try:
         data = request.json
