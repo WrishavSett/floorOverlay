@@ -5,7 +5,7 @@ import os
 import cv2
 import numpy as np
 
-# def scale_carpet(room_img_path, carpet_img_path, temp_path="../floorOverlay/temporary"):
+# def scale_carpet(room_img_path, carpet_img_path, temp_path="../Floor-Overlay/temporary"):
 #     # original_carpet_binary_path = convert_to_binary_carpet(carpet_img_path, temp_path)
     
 #     ref_image = cv2.imread(room_img_path)
@@ -47,7 +47,7 @@ import numpy as np
 
 #     return scaled_carpet_path
 
-def scale_carpet(room_img_path, carpet_img_path, carpet_dimensions=None, temp_path="../floorOverlay/temporary"):
+def scale_carpet(room_img_path, carpet_img_path, carpet_dimensions=None, temp_path="../Floor-Overlay/temporary"):
     ref_image = cv2.imread(room_img_path)
     ref_height, ref_width = ref_image.shape[:2]
 
@@ -82,7 +82,7 @@ def scale_carpet(room_img_path, carpet_img_path, carpet_dimensions=None, temp_pa
     print(f"014 Resized image saved as {scaled_carpet_path} with dimensions {new_width}x{new_height}")
     return scaled_carpet_path
 
-def create_black_image(room_img_path, temp_path="../floorOverlay/temporary"):
+def create_black_image(room_img_path, temp_path="../Floor-Overlay/temporary"):
     # Load the reference image to get its dimensions
     ref_img = cv2.imread(room_img_path)
     ref_height, ref_width = ref_img.shape[:2]
@@ -103,7 +103,7 @@ def create_black_image(room_img_path, temp_path="../floorOverlay/temporary"):
 
     return black_blank_img_path
 
-# def place_on_black(room_img_path, carpet_img_path, temp_path="../floorOverlay/temporary"):
+# def place_on_black(room_img_path, carpet_img_path, temp_path="../Floor-Overlay/temporary"):
 #     center_of_mask = find_and_mark_floor_center(room_img_path, temp_path)
 #     x, y = center_of_mask
 #     background_path = create_black_image(room_img_path, temp_path)
@@ -151,7 +151,7 @@ def create_black_image(room_img_path, temp_path="../floorOverlay/temporary"):
 
 #     return overlayed_binary_carpet_path
 
-def place_on_black(room_img_path, carpet_img_path, carpet_dimensions=None, temp_path="../floorOverlay/temporary"):
+def place_on_black(room_img_path, carpet_img_path, carpet_dimensions=None, temp_path="../Floor-Overlay/temporary"):
     center_of_mask = find_and_mark_floor_center(room_img_path, temp_path)
     x, y = center_of_mask
     background_path = create_black_image(room_img_path, temp_path)
@@ -187,8 +187,8 @@ def place_on_black(room_img_path, carpet_img_path, carpet_dimensions=None, temp_
     return overlayed_binary_carpet_path
 
 def main():
-    room_img_path = "D:/Wrishav/floorOverlay/inputRoom/room4.jpg"
-    carpet_img_path = "D:/Wrishav/floorOverlay/carpet/carpet2.jpg"
+    room_img_path = "D:/Wrishav/Floor-Overlay/inputRoom/room4.jpg"
+    carpet_img_path = "D:/Wrishav/Floor-Overlay/carpet/carpet2.jpg"
 
     overlayed_binary_carpet_path = place_on_black(room_img_path, carpet_img_path)
     print(f"Overlayed Binary Carpet Image Path: {overlayed_binary_carpet_path}")

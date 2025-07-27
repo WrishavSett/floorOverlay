@@ -111,12 +111,131 @@ def infer(imagepath,designimgpath,outputpath,mode = 3):
     return 1
 
 def main():
-    imagepath = "../floorOverlay/inputRoom/room_01a80ef6-b94e-4f2d-8169-84f1b0ec3896.jpg"
+    imagepath = "../Floor-Overlay/inputRoom/room_01a80ef6-b94e-4f2d-8169-84f1b0ec3896.jpg"
     designimgpath = 0
-    outputpath = "../floorOverlay/mask_out/mask_01a80ef6-b94e-4f2d-8169-84f1b0ec3896.jpg"
+    outputpath = "../Floor-Overlay/mask_out/mask_01a80ef6-b94e-4f2d-8169-84f1b0ec3896.jpg"
     
     load_model()
     infer(imagepath, designimgpath, outputpath)
 
 if __name__ == "__main__":
     main()
+
+#######################################################################################################################
+
+# from transformers import Mask2FormerImageProcessor, Mask2FormerForUniversalSegmentation
+# from PIL import Image
+# import numpy as np
+# import matplotlib.pyplot as plt
+# import torch
+# from numba import njit, prange
+# import os
+
+# # Optional: limit CUDA memory fragmentation
+# os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:512"
+
+# feature_extractor = None
+# model = None
+# device = torch.device('cpu')
+
+# # ----------------------------
+# # Numba-accelerated functions
+# # ----------------------------
+
+# @njit(parallel=True)
+# def create_wall_overlay(mask, dsgn, woverlay):
+#     w, h, _ = woverlay.shape
+#     dw, dh, _ = dsgn.shape
+#     for i in prange(0, w):
+#         for j in prange(0, h):
+#             if mask[i][j][0] == 255:
+#                 p = dsgn[i % dw][j % dh]
+#                 woverlay[i][j] = p
+#     return woverlay
+
+# @njit(parallel=True)
+# def create_output_image(imagearray, walloverlayarray):
+#     h, w, _ = walloverlayarray.shape
+#     for i in prange(0, h):
+#         for j in prange(0, w):
+#             if walloverlayarray[i][j].sum() > 0:
+#                 imagearray[i][j] = walloverlayarray[i][j]
+#     return imagearray.astype(np.uint8)
+
+# @njit(parallel=True)
+# def create_image_with_shadow(img_gray, hsv_image, walloverlayarray):
+#     h, w, _ = hsv_image.shape
+#     hsvmin = np.min(hsv_image[:, :, 2])
+#     hsvmax = np.max(hsv_image[:, :, 2])
+#     for i in prange(0, h):
+#         for j in prange(0, w):
+#             if walloverlayarray[i][j].sum() > 0:
+#                 hsv_image[i][j][2] = abs(hsv_image[i][j][2] - (((img_gray[i][j] / 1) - hsvmin) / (hsvmax - hsvmin)) * 100)
+#     return hsv_image.astype(np.uint8)
+
+# # ----------------------------
+# # Model loading
+# # ----------------------------
+
+# def load_model():
+#     global feature_extractor, model, device
+#     if torch.cuda.is_available():
+#         device = torch.device("cuda")
+#     feature_extractor = Mask2FormerImageProcessor.from_pretrained("facebook/mask2former-swin-large-ade-semantic")
+#     model = Mask2FormerForUniversalSegmentation.from_pretrained("facebook/mask2former-swin-large-ade-semantic")
+#     print("Mask2Former model loaded.")
+
+# # ----------------------------
+# # Inference
+# # ----------------------------
+
+# def infer(imagepath, designimgpath, outputpath, mode=3):
+#     global feature_extractor, model, device
+
+#     if torch.cuda.is_available():
+#         torch.cuda.empty_cache()
+#     model.to(device)
+
+#     image = Image.open(imagepath).convert('RGB')
+#     inputs = feature_extractor(images=image, return_tensors="pt").to(device)
+
+#     with torch.no_grad():
+#         outputs = model(**inputs)
+
+#     # Semantic segmentation result: 2D class ID map
+#     result = feature_extractor.post_process_semantic_segmentation(outputs, target_sizes=[image.size[::-1]])[0]
+#     predicted_map = result.cpu().numpy()
+
+#     if mode not in predicted_map:
+#         print(f"Class ID {mode} not found in output.")
+#         return 0
+
+#     # Generate RGB mask
+#     mask = np.zeros((predicted_map.shape[0], predicted_map.shape[1], 3), dtype=np.uint8)
+#     mask[predicted_map == mode] = (255, 0, 0)  # Red mask
+
+#     plt.imsave(outputpath, mask)
+#     print("Inference complete and mask saved.")
+
+#     if torch.cuda.is_available():
+#         model.to('cpu')
+#         del inputs, outputs, result
+#         torch.cuda.empty_cache()
+#         print(f"GPU memory cleaned. Remaining: {torch.cuda.memory_allocated() / (1024 ** 2):.2f} MB")
+
+#     return 1
+
+# # ----------------------------
+# # Main
+# # ----------------------------
+
+# def main():
+#     imagepath = "../Floor-Overlay/inputRoom/room_01a80ef6-b94e-4f2d-8169-84f1b0ec3896.jpg"
+#     designimgpath = 0
+#     outputpath = "../Floor-Overlay/mask_out/mask_01a80ef6-b94e-4f2d-8169-84f1b0ec3896.jpg"
+    
+#     load_model()
+#     infer(imagepath, designimgpath, outputpath)
+
+# if __name__ == "__main__":
+#     main()

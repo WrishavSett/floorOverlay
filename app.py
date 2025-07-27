@@ -6,6 +6,7 @@ import numpy as np
 import requests # Import the requests library
 from io import BytesIO # Import BytesIO for image data handling
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 
 # External imports from your modules
 from overlay import overlay_carpet_trapezoid, overlay_carpet_ellipse, apply_transparency_to_black_background
@@ -13,7 +14,7 @@ from floor_mask_model import load_model, infer
 from carpet_working import overlay_texture_on_floor
 
 app = Flask(__name__)
-
+CORS(app)
 # Create necessary directories
 for folder in ["inputRoom", "inputCarpet", "inputTile", "mask_out", "final_out", "temporary"]:
     os.makedirs(folder, exist_ok=True)
@@ -28,7 +29,7 @@ def decode_base64_to_image(base64_string):
     return cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
 
 def encode_image_to_base64(image):
-    _, buffer = cv2.imencode(".jpg", image)
+    _, buffer = cv2.imencode(".png", image)
     return base64.b64encode(buffer).decode("utf-8")
 
 # NEW UTILITY: Function to download image from a URL
@@ -72,47 +73,7 @@ def get_image_from_input_data(image_input_data):
 def ping():
     return jsonify({"status": "API is live"}), 200
 
-# # ─── Carpet Overlay ─────────────────────────────────────────── #
-# @app.route("/overlayCarpet", methods=["POST"])
-# def overlay_carpet():
-#     try:
-#         data = request.json
-#         room_image_data = data.get("room_image")    # Can be base64 or URL
-#         carpet_image_data = data.get("carpet_image") # Can be base64 or URL
-#         overlay_type = data.get("overlay_type", "ellipse")
-#         carpet_dimensions = data.get("carpet_dimensions", None)
-
-#         if not room_image_data or not carpet_image_data:
-#             return jsonify({"error": "Both room_image and carpet_image must be provided"}), 400
-
-#         unique_id = str(uuid.uuid4())
-#         room_path = os.path.join("inputRoom", f"room_{unique_id}.jpg")
-#         carpet_path = os.path.join("inputCarpet", f"carpet_{unique_id}.jpg")
-
-#         # Process input images
-#         room_img = get_image_from_input_data(room_image_data)
-#         carpet_img = get_image_from_input_data(carpet_image_data)
-
-#         cv2.imwrite(room_path, room_img)
-#         cv2.imwrite(carpet_path, carpet_img)
-
-#         if overlay_type == "ellipse":
-#             result_path = overlay_carpet_ellipse(room_path, carpet_path, carpet_dimensions=carpet_dimensions, output_path="final_out")
-#         else:
-#             result_path = overlay_carpet_trapezoid(room_path, carpet_path, carpet_dimensions=carpet_dimensions, output_path="final_out")
-
-#         result_img = cv2.imread(result_path)
-#         if result_img is None: # Added check for successful image read
-#             raise RuntimeError(f"Failed to read result image from path: {result_path}")
-#         return jsonify({"status": "success", "final_output": encode_image_to_base64(result_img)})
-#     except Exception as e:
-#         import traceback
-#         traceback.print_exc() # Print traceback for debugging
-#         return jsonify({"error": str(e)}), 500
-
-# ───────────────────────────────────────────────────────────── #
-# NEW ENDPOINT: /getTransparentCarpet (MODIFIED)
-# ───────────────────────────────────────────────────────────── #
+# ─── Carpet Overlay ─────────────────────────────────────────── #
 @app.route("/overlayCarpet", methods=["POST"])
 def get_transparent_carpet():
     try:
@@ -204,10 +165,7 @@ def overlay_floor_model():
         import traceback
         traceback.print_exc()
         return jsonify({"error": str(e)}), 500
-
-# ───────────────────────────────────────────────────────────── #
+    #flask app
 
 if __name__ == "__main__":
-    # In a production environment, consider setting debug=False
-    # and using a production-ready WSGI server like Gunicorn or uWSGI.
-    app.run(debug=True)
+    app.run(debug=True, host = "0.0.0.0", port = 5001)

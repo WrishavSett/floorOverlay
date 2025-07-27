@@ -14,10 +14,22 @@ def order_points(pts):
     split_value = y_coords[threshold_index]
     top_points = sorted_points[sorted_points[:, 1] <= split_value]
     bottom_points = sorted_points[sorted_points[:, 1] > split_value]
+    min_y_index = np.argmin(top_points[:, 1])
+    lowest_y_point = top_points[min_y_index]
     top_left = min(top_points, key=lambda p: p[0])
     top_right = max(top_points, key=lambda p: p[0])
+    top_left = np.array(top_left)
+    top_right = np.array(top_right)
+    top_left[1] = lowest_y_point[1]
+    top_right[1] = lowest_y_point[1]
+    max_y_index = np.argmax(bottom_points[:, 1])
+    highest_y_point = bottom_points[max_y_index]
     bottom_left = min(bottom_points, key=lambda p: p[0])
     bottom_right = max(bottom_points, key=lambda p: p[0])
+    bottom_left = np.array(bottom_left)
+    bottom_right = np.array(bottom_right)
+    bottom_left[1] = highest_y_point[1]
+    bottom_right[1] = highest_y_point[1]
     rect[0], rect[1], rect[2], rect[3] = top_left, top_right, bottom_right, bottom_left
     return rect
 

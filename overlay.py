@@ -7,7 +7,7 @@ from scale_and_overlay import place_on_black
 from convert_binary import convert_to_binary_mask, convert_to_binary_carpet
 from carpet_circle import carpet_ellipse_and_center
 
-def adjust_carpet_perspective(carpet_img_path, temp_path="../floorOverlay/temporary"):
+def adjust_carpet_perspective(carpet_img_path, temp_path="../Floor-Overlay/temporary"):
     image = cv2.imread(carpet_img_path)
     h, w = image.shape[:2]
 
@@ -44,8 +44,8 @@ def apply_transparency_to_black_background(
         carpet_img_path,
         overlay_type="ellipse",
         carpet_dimensions=None,
-        output_path="../floorOverlay/final_out",
-        temp_path = "../floorOverlay/temporary"):
+        output_path="../Floor-Overlay/final_out",
+        temp_path = "../Floor-Overlay/temporary"):
     
     carpet_on_black_path = None
     binary_carpet_mask_path = None
@@ -145,7 +145,7 @@ def apply_transparency_to_black_background(
     return final_output_path
 
 ########################################################################################################
-# def overlay_carpet_trapezoid(room_img_path, carpet_img_path, output_path="../floorOverlay/final_out"):
+# def overlay_carpet_trapezoid(room_img_path, carpet_img_path, output_path="../Floor-Overlay/final_out"):
 #     warped_carpet_img_path = adjust_carpet_perspective(carpet_img_path)
 #     room_img = cv2.imread(room_img_path)
 #     # Extract the room image name without extension
@@ -174,7 +174,7 @@ def apply_transparency_to_black_background(
 #     return result_img_path
 
 ########################################################################################################
-# def overlay_carpet_trapezoid(room_img_path, carpet_img_path, carpet_dimensions=None, output_path="../floorOverlay/final_out"):
+# def overlay_carpet_trapezoid(room_img_path, carpet_img_path, carpet_dimensions=None, output_path="../Floor-Overlay/final_out"):
 #     warped_carpet_img_path = adjust_carpet_perspective(carpet_img_path)
 #     room_img = cv2.imread(room_img_path)
 #     room_image_name = os.path.splitext(os.path.basename(room_img_path))[0]
@@ -196,9 +196,9 @@ def apply_transparency_to_black_background(
 #     return result_img_path
 
 ########################################################################################################
-def overlay_carpet_trapezoid(room_img_path, carpet_img_path, carpet_dimensions=None, output_path="../floorOverlay/final_out"):
+def overlay_carpet_trapezoid(room_img_path, carpet_img_path, carpet_dimensions=None, output_path="../Floor-Overlay/final_out"):
     os.makedirs(output_path, exist_ok=True)
-    temp_path = "../floorOverlay/temporary"
+    temp_path = "../Floor-Overlay/temporary"
     os.makedirs(temp_path, exist_ok=True)
 
     warped_carpet_img_path = adjust_carpet_perspective(carpet_img_path, temp_path=temp_path)
@@ -244,7 +244,7 @@ def overlay_carpet_trapezoid(room_img_path, carpet_img_path, carpet_dimensions=N
     return result_img_path
 
 ########################################################################################################
-# def overlay_carpet_ellipse(room_img_path, carpet_img_path, output_path="../floorOverlay/final_out"):
+# def overlay_carpet_ellipse(room_img_path, carpet_img_path, output_path="../Floor-Overlay/final_out"):
 #     ellipse_carpet_path, ellipse_carpet_center = carpet_ellipse_and_center(carpet_img_path)
 #     room_img = cv2.imread(room_img_path)
 #     # Extract the room image name without extension
@@ -273,7 +273,7 @@ def overlay_carpet_trapezoid(room_img_path, carpet_img_path, carpet_dimensions=N
 #     return result_img_path
 
 ########################################################################################################
-# def overlay_carpet_ellipse(room_img_path, carpet_img_path, carpet_dimensions=None, output_path="../floorOverlay/final_out"):
+# def overlay_carpet_ellipse(room_img_path, carpet_img_path, carpet_dimensions=None, output_path="../Floor-Overlay/final_out"):
 #     ellipse_carpet_path, ellipse_carpet_center = carpet_ellipse_and_center(carpet_img_path)
 #     room_img = cv2.imread(room_img_path)
 #     room_image_name = os.path.splitext(os.path.basename(room_img_path))[0]
@@ -295,9 +295,9 @@ def overlay_carpet_trapezoid(room_img_path, carpet_img_path, carpet_dimensions=N
 #     return result_img_path
 
 ########################################################################################################
-def overlay_carpet_ellipse(room_img_path, carpet_img_path, carpet_dimensions=None, output_path="../floorOverlay/final_out"):
+def overlay_carpet_ellipse(room_img_path, carpet_img_path, carpet_dimensions=None, output_path="../Floor-Overlay/final_out"):
     os.makedirs(output_path, exist_ok=True)
-    temp_path = "../floorOverlay/temporary"
+    temp_path = "../Floor-Overlay/temporary"
     os.makedirs(temp_path, exist_ok=True)
 
     ellipse_carpet_path, ellipse_carpet_center = carpet_ellipse_and_center(carpet_img_path, temp_path=temp_path)
@@ -343,9 +343,9 @@ def overlay_carpet_ellipse(room_img_path, carpet_img_path, carpet_dimensions=Non
     return result_img_path
 
 def main():
-    room_img_path = "../floorOverlay/sample_images2/rooms/room1.jpg"
-    carpet_img_path = "../floorOverlay/sample_images2/carpets/carpet2.jpg"
-    temp_folder_path = "../floorOverlay/temporary"
+    room_img_path = "../Floor-Overlay/sample_images2/rooms/room1.jpg"
+    carpet_img_path = "../Floor-Overlay/sample_images2/carpets/carpet2.jpg"
+    temp_folder_path = "../Floor-Overlay/temporary"
     
     # overlay_carpet_trapezoid(room_img_path, carpet_img_path)
     # overlay_carpet_ellipse(room_img_path, carpet_img_path)

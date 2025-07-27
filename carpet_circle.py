@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 # from scale_and_overlay import scale_carpet
 
-def carpet_circle(carpet_img_path, temp_path="../floorOverlay/temporary"):
+def carpet_circle(carpet_img_path, temp_path="../Floor-Overlay/temporary"):
     # scaled_carpet_img_path = scale_carpet(room_img_path, carpet_img_path)
     # scaled_carpet_img = cv2.imread(scaled_carpet_img_path)
     
@@ -54,7 +54,7 @@ def carpet_circle(carpet_img_path, temp_path="../floorOverlay/temporary"):
 
     return cropped_carpet_path
 
-def carpet_ellipse_and_center(carpet_img_path, temp_path="../floorOverlay/temporary"):
+def carpet_ellipse_and_center(carpet_img_path, temp_path="../Floor-Overlay/temporary"):
     cropped_carpet_path = carpet_circle(carpet_img_path)
     img = cv2.imread(cropped_carpet_path, cv2.IMREAD_UNCHANGED)
     height, width = img.shape[:2]
@@ -134,7 +134,7 @@ def carpet_ellipse_and_center(carpet_img_path, temp_path="../floorOverlay/tempor
     return carpet_ellipse_path, center
 
 def main():
-    carpet_ellipse_and_center("../floorOverlay/inputCarpet/carpet2.jpg")
+    carpet_ellipse_and_center("../Floor-Overlay/inputCarpet/carpet2.jpg")
 
 if __name__ == "__main__":
     main()

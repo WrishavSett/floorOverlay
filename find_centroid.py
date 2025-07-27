@@ -5,7 +5,7 @@ import numpy as np
 import os
 from mask_room_image import mask
 
-def find_and_mark_floor_center(room_img_path, temp_path="../floorOverlay/temporary"):
+def find_and_mark_floor_center(room_img_path, temp_path="../Floor-Overlay/temporary"):
     masked_image_path = mask(room_img_path)
     # Load the masked image
     image = cv2.imread(masked_image_path)
@@ -55,7 +55,7 @@ def find_and_mark_floor_center(room_img_path, temp_path="../floorOverlay/tempora
 
 def main():
     # Example usage
-    room_image_path = "../floorOverlay/inputRoom/room4.jpg"
+    room_image_path = "../Floor-Overlay/inputRoom/room4.jpg"
     center_point = find_and_mark_floor_center(room_image_path)
 
     if center_point:

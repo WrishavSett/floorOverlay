@@ -4,7 +4,7 @@ import os
 import cv2
 from mask_room_image import mask
 
-def convert_to_binary_mask(room_image_path, temp_path="../floorOverlay/temporary"):
+def convert_to_binary_mask(room_image_path, temp_path="../Floor-Overlay/temporary"):
     # Get the mask image path
     mask_image_path = mask(room_image_path)
     
@@ -35,7 +35,7 @@ def convert_to_binary_mask(room_image_path, temp_path="../floorOverlay/temporary
     
     return binary_mask_path
 
-def convert_to_binary_carpet(carpet_img_path, temp_path="../floorOverlay/temporary"):
+def convert_to_binary_carpet(carpet_img_path, temp_path="../Floor-Overlay/temporary"):
     # Read the carpet image
     carpet_image = cv2.imread(carpet_img_path, cv2.IMREAD_GRAYSCALE)
     if carpet_image is None:
@@ -60,10 +60,10 @@ def convert_to_binary_carpet(carpet_img_path, temp_path="../floorOverlay/tempora
     return binary_carpet_path
 
 def main():
-    room_bin_mask_path = convert_to_binary_mask("../floorOverlay/inputRoom/room4.jpg", temp_path="../floorOverlay/temporary")
+    room_bin_mask_path = convert_to_binary_mask("../Floor-Overlay/inputRoom/room4.jpg", temp_path="../Floor-Overlay/temporary")
     print(room_bin_mask_path)
     
-    carpet_original_bin_mask_path = convert_to_binary_carpet("../floorOverlay/carpet/carpet1.jpg", temp_path="../floorOverlay/temporary")
+    carpet_original_bin_mask_path = convert_to_binary_carpet("../Floor-Overlay/carpet/carpet1.jpg", temp_path="../Floor-Overlay/temporary")
     print(carpet_original_bin_mask_path)
 
 
