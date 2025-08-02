@@ -12,6 +12,7 @@ from flask_cors import CORS
 from overlay import overlay_carpet_trapezoid, overlay_carpet_ellipse, apply_transparency_to_black_background
 from floor_mask_model import load_model, infer
 from carpet_working import overlay_texture_on_floor
+from mask_room_image import mask
 
 app = Flask(__name__)
 CORS(app)
@@ -97,6 +98,19 @@ def get_transparent_carpet():
         cv2.imwrite(room_path, room_img)
         cv2.imwrite(carpet_path, carpet_img)
 
+        # ----------------- ADDITION FOR FLOOR MASK -----------------
+        # Step 1: Generate the floor mask using the room image path
+        floor_mask_path = mask(room_path)
+        
+        # Step 2: Read the floor mask image
+        floor_mask_img = cv2.imread(floor_mask_path)
+        if floor_mask_img is None:
+            raise RuntimeError(f"Failed to read floor mask image from path: {floor_mask_path}")
+        
+        # Step 3: Encode the floor mask image to base64
+        encoded_floor_mask = encode_image_to_base64(floor_mask_img)
+        # -------------------------------------------------------------
+
         transparent_carpet_path = apply_transparency_to_black_background(
             room_path,
             carpet_path,
@@ -112,13 +126,14 @@ def get_transparent_carpet():
         if transparent_carpet_img is None: # Added check for successful image read
             raise RuntimeError(f"Failed to read transparent carpet image from path: {transparent_carpet_path}")
         
-        encoded_room_img = encode_image_to_base64(room_img)
+        # encoded_room_img = encode_image_to_base64(room_img) # CHANGED: Removed original room image
         encoded_transparent_carpet = encode_image_to_base64(transparent_carpet_img)
 
         return jsonify({
             "status": "success",
-            "original_room_image": encoded_room_img,
-            "transparent_carpet_image": encoded_transparent_carpet
+            # "original_room_image": encoded_room_img, # CHANGED: Removed original room image
+            "transparent_carpet_image": encoded_transparent_carpet,
+            "floor_mask_image": encoded_floor_mask # CHANGED: Added floor mask image
         })
 
     except Exception as e:
