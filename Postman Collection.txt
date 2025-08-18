@@ -1,0 +1,32 @@
+GET 	| 	127.0.0.1:5001/ping
+POST 	| 	127.0.0.1:5001/overlayFloor
+POST 	| 	127.0.0.1:5001/overlayCarpet
+
+
+overlayFloor
+
+{
+  "room_image": "",
+  "design_image": ""
+}
+
+{
+  "final_output": "",
+  "status": ""
+}
+
+
+overlayCarpet
+
+{
+  "room_image": "",
+  "carpet_image": "",
+  "overlay_type": "ellipse(or trapezoid)",
+  "carpet_dimensions": "8/6"
+}
+
+{
+  "floor_mask_image": "",
+  "status": "",
+  "transparent_carpet_image": ""
+}
