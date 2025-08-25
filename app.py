@@ -12,7 +12,7 @@ from flask_cors import CORS
 from overlay import overlay_carpet_trapezoid, overlay_carpet_ellipse, apply_transparency_to_black_background
 from floor_mask_model import load_model, infer
 from carpet_working import overlay_texture_on_floor
-from mask_room_image import mask
+from mask_room_image import mask, scale_room_image
 
 app = Flask(__name__)
 CORS(app)
@@ -100,6 +100,9 @@ def get_transparent_carpet():
 
         # ----------------- ADDITION FOR FLOOR MASK -----------------
         # Step 1: Generate the floor mask using the room image path
+        # Applying scaling up/down right after user input to avoid multiple changes/repetetive function calls
+        scaled_room_img_path = scale_room_image(room_path)
+        room_path = scaled_room_img_path
         floor_mask_path = mask(room_path)
         
         # Step 2: Read the floor mask image
@@ -164,6 +167,10 @@ def overlay_floor_model():
 
         cv2.imwrite(room_path, room_img)
         cv2.imwrite(design_path, design_img)
+
+        # Applying scaling up/down right after user input to avoid multiple changes/repetetive function calls
+        scaled_room_img_path = scale_room_image(room_path)
+        room_path = scaled_room_img_path
 
         success = infer(room_path, 0, mask_path)
 
