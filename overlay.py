@@ -144,58 +144,6 @@ def apply_transparency_to_black_background(
     print(f"015 Final transparent image saved to: {final_output_path}")
     return final_output_path
 
-########################################################################################################
-# def overlay_carpet_trapezoid(room_img_path, carpet_img_path, output_path="../Floor-Overlay/final_out"):
-#     warped_carpet_img_path = adjust_carpet_perspective(carpet_img_path)
-#     room_img = cv2.imread(room_img_path)
-#     # Extract the room image name without extension
-#     room_image_name = os.path.splitext(os.path.basename(room_img_path))[0]
-
-#     # mask_img_path = mask(room_img_path)
-#     # mask_img = cv2.imread(mask_img_path)
-
-#     bin_mask_img_path = convert_to_binary_mask(room_img_path)
-#     bin_mask_img = cv2.imread(bin_mask_img_path)
-
-#     overlayed_carpet_img_path = place_on_black(room_img_path, warped_carpet_img_path)
-#     overlayed_carpet_img = cv2.imread(overlayed_carpet_img_path)
-
-#     overlayed_bin_carpet_img_path = convert_to_binary_carpet(overlayed_carpet_img_path)
-#     overlayed_bin_carpet_img = cv2.imread(overlayed_bin_carpet_img_path)
-
-#     # Bitwise AND between binary masked room image and overlayed carpet image
-#     tmp_result = cv2.bitwise_and(bin_mask_img, overlayed_bin_carpet_img)
-#     result = np.where(tmp_result == 255, overlayed_carpet_img,room_img)
-
-    
-#     result_img_path = os.path.join(output_path, f"overlayed_carpet_t_{room_image_name}.jpg")
-#     cv2.imwrite(result_img_path, result)
-
-#     return result_img_path
-
-########################################################################################################
-# def overlay_carpet_trapezoid(room_img_path, carpet_img_path, carpet_dimensions=None, output_path="../Floor-Overlay/final_out"):
-#     warped_carpet_img_path = adjust_carpet_perspective(carpet_img_path)
-#     room_img = cv2.imread(room_img_path)
-#     room_image_name = os.path.splitext(os.path.basename(room_img_path))[0]
-
-#     bin_mask_img_path = convert_to_binary_mask(room_img_path)
-#     bin_mask_img = cv2.imread(bin_mask_img_path)
-
-#     overlayed_carpet_img_path = place_on_black(room_img_path, warped_carpet_img_path, carpet_dimensions=carpet_dimensions)
-#     overlayed_carpet_img = cv2.imread(overlayed_carpet_img_path)
-
-#     overlayed_bin_carpet_img_path = convert_to_binary_carpet(overlayed_carpet_img_path)
-#     overlayed_bin_carpet_img = cv2.imread(overlayed_bin_carpet_img_path)
-
-#     tmp_result = cv2.bitwise_and(bin_mask_img, overlayed_bin_carpet_img)
-#     result = np.where(tmp_result == 255, overlayed_carpet_img, room_img)
-
-#     result_img_path = os.path.join(output_path, f"overlayed_carpet_t_{room_image_name}.jpg")
-#     cv2.imwrite(result_img_path, result)
-#     return result_img_path
-
-########################################################################################################
 def overlay_carpet_trapezoid(room_img_path, carpet_img_path, carpet_dimensions=None, output_path="../Floor-Overlay/final_out"):
     os.makedirs(output_path, exist_ok=True)
     temp_path = "../Floor-Overlay/temporary"
@@ -243,58 +191,6 @@ def overlay_carpet_trapezoid(room_img_path, carpet_img_path, carpet_dimensions=N
     cv2.imwrite(result_img_path, result)
     return result_img_path
 
-########################################################################################################
-# def overlay_carpet_ellipse(room_img_path, carpet_img_path, output_path="../Floor-Overlay/final_out"):
-#     ellipse_carpet_path, ellipse_carpet_center = carpet_ellipse_and_center(carpet_img_path)
-#     room_img = cv2.imread(room_img_path)
-#     # Extract the room image name without extension
-#     room_image_name = os.path.splitext(os.path.basename(room_img_path))[0]
-
-#     # mask_img_path = mask(room_img_path)
-#     # mask_img = cv2.imread(mask_img_path)
-
-#     bin_mask_img_path = convert_to_binary_mask(room_img_path)
-#     bin_mask_img = cv2.imread(bin_mask_img_path)
-
-#     overlayed_carpet_img_path = place_on_black(room_img_path, ellipse_carpet_path)
-#     overlayed_carpet_img = cv2.imread(overlayed_carpet_img_path)
-
-#     overlayed_bin_carpet_img_path = convert_to_binary_carpet(overlayed_carpet_img_path)
-#     overlayed_bin_carpet_img = cv2.imread(overlayed_bin_carpet_img_path)
-
-#     # Bitwise AND between binary masked room image and overlayed carpet image
-#     tmp_result = cv2.bitwise_and(bin_mask_img, overlayed_bin_carpet_img)
-#     result = np.where(tmp_result == 255, overlayed_carpet_img,room_img)
-
-    
-#     result_img_path = os.path.join(output_path, f"overlayed_carpet_e_{room_image_name}.jpg")
-#     cv2.imwrite(result_img_path, result)
-
-#     return result_img_path
-
-########################################################################################################
-# def overlay_carpet_ellipse(room_img_path, carpet_img_path, carpet_dimensions=None, output_path="../Floor-Overlay/final_out"):
-#     ellipse_carpet_path, ellipse_carpet_center = carpet_ellipse_and_center(carpet_img_path)
-#     room_img = cv2.imread(room_img_path)
-#     room_image_name = os.path.splitext(os.path.basename(room_img_path))[0]
-
-#     bin_mask_img_path = convert_to_binary_mask(room_img_path)
-#     bin_mask_img = cv2.imread(bin_mask_img_path)
-
-#     overlayed_carpet_img_path = place_on_black(room_img_path, ellipse_carpet_path, carpet_dimensions=carpet_dimensions)
-#     overlayed_carpet_img = cv2.imread(overlayed_carpet_img_path)
-
-#     overlayed_bin_carpet_img_path = convert_to_binary_carpet(overlayed_carpet_img_path)
-#     overlayed_bin_carpet_img = cv2.imread(overlayed_bin_carpet_img_path)
-
-#     tmp_result = cv2.bitwise_and(bin_mask_img, overlayed_bin_carpet_img)
-#     result = np.where(tmp_result == 255, overlayed_carpet_img, room_img)
-
-#     result_img_path = os.path.join(output_path, f"overlayed_carpet_e_{room_image_name}.jpg")
-#     cv2.imwrite(result_img_path, result)
-#     return result_img_path
-
-########################################################################################################
 def overlay_carpet_ellipse(room_img_path, carpet_img_path, carpet_dimensions=None, output_path="../Floor-Overlay/final_out"):
     os.makedirs(output_path, exist_ok=True)
     temp_path = "../Floor-Overlay/temporary"

@@ -2,6 +2,7 @@
  
 import os
 import cv2
+import numpy as np
 from floor_mask_model import load_model, infer
 
 def scale_room_image(room_image_path,
@@ -76,9 +77,73 @@ def mask(room_image_path):
         print("011 Feature not found in image. Exiting...")
         return None
 
+def tileDesign(design_path,
+               multiplier=5,
+               temp_path="../Floor-Overlay/temporary"):
+    """
+    Tiles a design or texture image by a specific multiplier using OpenCV,
+    saves it to a temporary location, and returns the path.
+
+    Args:
+        design_path (str): The file path to the design/tile image.
+        multiplier (int): The number of times to repeat the tile horizontally and vertically.
+        temp_path (str): The directory to save the temporary tiled image.
+
+    Returns:
+        str: The file path to the saved tiled image.
+             Returns None if the design image cannot be read.
+    """
+    print(f"017 Tiling design from {design_path} with a multiplier of {multiplier}...")
+
+    # Read the design image
+    design_img = cv2.imread(design_path)
+    if design_img is None:
+        print(f"017 Error: Could not read image at path: {design_path}")
+        return None
+
+    # Get the dimensions of the single tile
+    tile_height, tile_width, _ = design_img.shape
+
+    # Calculate the new target dimensions based on the multiplier
+    target_width = tile_width * multiplier
+    target_height = tile_height * multiplier
+
+    print(f"017 Tiling {multiplier}x horizontally and {multiplier}x vertically.")
+
+    # Create the tiled image
+    tiled_image = np.tile(design_img, (multiplier, multiplier, 1))
+
+    # Crop the tiled image to the target dimensions (which are now based on the multiplier)
+    tiled_image_cropped = tiled_image[0:target_height, 0:target_width]
+
+    # Ensure the output directory exists
+    os.makedirs(temp_path, exist_ok=True)
+    
+    # Save the tiled image to a temporary file
+    tiled_image_path = os.path.join(temp_path, "tiled_design.jpg")
+    cv2.imwrite(tiled_image_path, tiled_image_cropped)
+
+    print(f"017 Design successfully tiled and saved to {tiled_image_path}.")
+    return tiled_image_path
+
 def main():
-    path = mask("../Floor-Overlay/inputRoom/room4.jpg")
-    print(path)
+    # path = mask("../Floor-Overlay/inputRoom/room4.jpg")
+    # print(path)
+
+    sample_design_path = "../Floor-Overlay/sample_images/designs/tile10.jpg"
+    
+    # Use a multiplier instead of target dimensions
+    tile_multiplier = 4
+    tiled_result_path = tileDesign(sample_design_path)
+
+    if tiled_result_path is not None:
+        print(f"017 Returned path: {tiled_result_path}")
+        # Load the saved image to verify
+        tiled_image = cv2.imread(tiled_result_path)
+        cv2.imshow("Tiled Design", tiled_image)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+        print("017 Tiled image displayed. Press any key to close.")
 
 if __name__ == "__main__":
     main()

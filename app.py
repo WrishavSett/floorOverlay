@@ -12,7 +12,7 @@ from flask_cors import CORS
 from overlay import overlay_carpet_trapezoid, overlay_carpet_ellipse, apply_transparency_to_black_background
 from floor_mask_model import load_model, infer
 from carpet_working import overlay_texture_on_floor
-from mask_room_image import mask, scale_room_image
+from mask_room_image import mask, scale_room_image, tileDesign
 
 app = Flask(__name__)
 CORS(app)
@@ -171,6 +171,10 @@ def overlay_floor_model():
         # Applying scaling up/down right after user input to avoid multiple changes/repetetive function calls
         scaled_room_img_path = scale_room_image(room_path)
         room_path = scaled_room_img_path
+
+        # Applying tiling to the floor design image
+        tiled_design_path = tileDesign(design_path)
+        design_path = tiled_design_path
 
         success = infer(room_path, 0, mask_path)
 
