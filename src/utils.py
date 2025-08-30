@@ -9,7 +9,7 @@ from main import *
 
 def scale_room_image(
         room_image_path,
-        temp_path="../Floor-Overlay/temporary",
+        temp_path="../floorOverlay/temporary",
         target_resolution=(1920, 1080)):
     """
     Scales a room image to fit within the target resolution while maintaining aspect ratio.
@@ -48,10 +48,29 @@ def scale_room_image(
 
     return scaled_image_path
 
+def resize_for_safe_tiling(
+        img,
+        target_size=(800, 800)):
+    """
+    Resize an image to 800x800 regardless of original size.
+
+    Args:
+        img (np.ndarray): Input image.
+        multiplier (int): Number of times the image will be tiled (unused now).
+
+    Returns:
+        np.ndarray: Resized image (1000x1000) safe to tile.
+    """
+    import cv2
+    target_size = target_size
+    print(f"|INFO| Resizing image to fixed size {target_size} for safe tiling.")
+    img = cv2.resize(img, target_size, interpolation=cv2.INTER_AREA)
+    return img
+
 def tileDesign(
         design_path,
-        multiplier=5,
-        temp_path="../Floor-Overlay/temporary"):
+        multiplier=3,
+        temp_path="../floorOverlay/temporary"):
     """
     Tiles a design image and saves the result to a temporary location.
 
@@ -69,6 +88,8 @@ def tileDesign(
     if design_img is None:
         print(f"|ERROR| Could not read image at path: {design_path}")
         return None
+    
+    design_img = resize_for_safe_tiling(design_img)
 
     tile_height, tile_width, _ = design_img.shape
     target_width = tile_width * multiplier
@@ -98,7 +119,7 @@ def mask(
         str or None: Path to the generated mask image if successful, None otherwise.
     """
     room_image_name = os.path.splitext(os.path.basename(room_image_path))[0]
-    mask_output_dir = "../Floor-Overlay/mask_out"
+    mask_output_dir = "../floorOverlay/mask_out"
     os.makedirs(mask_output_dir, exist_ok=True)
     mask_output_path = os.path.join(mask_output_dir, f"{room_image_name}_mask.jpg")
 
@@ -114,7 +135,7 @@ def mask(
 
 def convert_to_binary_mask(
         room_image_path,
-        temp_path="../Floor-Overlay/temporary"):
+        temp_path="../floorOverlay/temporary"):
     """
     Converts a segmentation mask for a room into a binary mask.
 
@@ -151,7 +172,7 @@ def convert_to_binary_mask(
 
 def convert_to_binary_carpet(
         carpet_img_path,
-        temp_path="../Floor-Overlay/temporary"):
+        temp_path="../floorOverlay/temporary"):
     """
     Converts a carpet image to a binary mask.
 
@@ -182,7 +203,7 @@ def convert_to_binary_carpet(
 
 def find_and_mark_floor_center(
         room_img_path,
-        temp_path="../Floor-Overlay/temporary"):
+        temp_path="../floorOverlay/temporary"):
     """
     Finds the centroid of the floor mask in a room image and marks it.
 
@@ -244,7 +265,7 @@ def scale_carpet(
         room_img_path,
         carpet_img_path,
         carpet_dimensions=None,
-        temp_path="../Floor-Overlay/temporary"):
+        temp_path="../floorOverlay/temporary"):
     """
     Scales a carpet image relative to a room image based on provided dimensions or a default ratio.
 
@@ -293,7 +314,7 @@ def scale_carpet(
 
 def create_black_image(
         room_img_path,
-        temp_path="../Floor-Overlay/temporary"):
+        temp_path="../floorOverlay/temporary"):
     """
     Creates a black image with the same dimensions as a reference room image.
 
@@ -323,7 +344,7 @@ def place_on_black(
         room_img_path,
         carpet_img_path,
         carpet_dimensions=None,
-        temp_path="../Floor-Overlay/temporary"):
+        temp_path="../floorOverlay/temporary"):
     """
     Places a scaled carpet image on a black background, centered on the floor mask's centroid.
 
@@ -376,7 +397,7 @@ def place_on_black(
 
 def adjust_carpet_perspective(
         carpet_img_path,
-        temp_path="../Floor-Overlay/temporary"):
+        temp_path="../floorOverlay/temporary"):
     """
     Applies a perspective transformation to a carpet image to make it look like a trapezoid.
 
@@ -420,8 +441,8 @@ def apply_transparency_to_black_background(
         carpet_img_path,
         overlay_type="ellipse",
         carpet_dimensions=None,
-        output_path="../Floor-Overlay/final_out",
-        temp_path = "../Floor-Overlay/temporary"):
+        output_path="../floorOverlay/final_out",
+        temp_path = "../floorOverlay/temporary"):
     """
     Applies transparency to a carpet image that has been placed on a black background.
 
@@ -530,7 +551,7 @@ def overlay_carpet_trapezoid(
         room_img_path, 
         carpet_img_path, 
         carpet_dimensions=None, 
-        output_path="../Floor-Overlay/final_out"):
+        output_path="../floorOverlay/final_out"):
     """
     Overlays a trapezoidal carpet onto a room image, blending the two images based on binary masks.
 
@@ -544,7 +565,7 @@ def overlay_carpet_trapezoid(
         str: The path to the saved final image.
     """
     os.makedirs(output_path, exist_ok=True)
-    temp_path = "../Floor-Overlay/temporary"
+    temp_path = "../floorOverlay/temporary"
     os.makedirs(temp_path, exist_ok=True)
 
     warped_carpet_img_path = adjust_carpet_perspective(carpet_img_path, temp_path=temp_path)
@@ -590,7 +611,7 @@ def overlay_carpet_ellipse(
         room_img_path,
         carpet_img_path,
         carpet_dimensions=None,
-        output_path="../Floor-Overlay/final_out"):
+        output_path="../floorOverlay/final_out"):
     """
     Overlays an elliptical carpet onto a room image, blending the two images based on binary masks.
 
@@ -604,7 +625,7 @@ def overlay_carpet_ellipse(
         str: The path to the saved final image.
     """
     os.makedirs(output_path, exist_ok=True)
-    temp_path = "../Floor-Overlay/temporary"
+    temp_path = "../floorOverlay/temporary"
     os.makedirs(temp_path, exist_ok=True)
 
     ellipse_carpet_path, ellipse_carpet_center = carpet_ellipse_and_center(carpet_img_path, temp_path=temp_path)
@@ -648,7 +669,7 @@ def overlay_carpet_ellipse(
 
 def carpet_circle(
         carpet_img_path,
-        temp_path="../Floor-Overlay/temporary"):
+        temp_path="../floorOverlay/temporary"):
     """
     Crops a carpet image into a circle.
 
@@ -708,7 +729,7 @@ def carpet_circle(
 
 def carpet_ellipse_and_center(
         carpet_img_path,
-        temp_path="../Floor-Overlay/temporary"):
+        temp_path="../floorOverlay/temporary"):
     """
     Transforms a circular carpet image into an ellipse with a 3D perspective and finds its center.
 
