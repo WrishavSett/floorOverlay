@@ -19,6 +19,17 @@ device = torch.device('cpu')
 
 @njit(parallel=True)
 def create_wall_overlay(mask,dsgn,woverlay):
+    """
+    Overlays a design pattern onto a mask, creating a new image with the design.
+
+    Args:
+        mask (np.array): The segmentation mask.
+        dsgn (np.array): The design pattern image.
+        woverlay (np.array): The output image to be created.
+
+    Returns:
+        np.array: The image with the design overlaid.
+    """
     w,h,_ = woverlay.shape
     dw,dh,_ = dsgn.shape
     for i in prange(0,w):
@@ -30,6 +41,16 @@ def create_wall_overlay(mask,dsgn,woverlay):
 
 @njit(parallel=True)
 def create_output_image(imagearray,walloverlayarray):
+    """
+    Merges a wall overlay onto the original image.
+
+    Args:
+        imagearray (np.array): The original image array.
+        walloverlayarray (np.array): The overlay image array.
+
+    Returns:
+        np.array: The combined image with the overlay.
+    """
     h,w,_ =  walloverlayarray.shape
     for i in prange(0,h):
         for j in prange(0,w):
@@ -39,18 +60,34 @@ def create_output_image(imagearray,walloverlayarray):
 
 @njit(parallel=True)
 def create_image_with_shadow(img_gray,hsv_image,walloverlayarray):
-  h,w,_ =  hsv_image.shape
-  hsvmin = np.min(hsv_image[:,:,2])
-  hsvmax = np.max(hsv_image[:,:,2])
-  for i in prange(0,h):
-    for j in prange(0,w):
-      if(walloverlayarray[i][j].sum() > 0 ):
-        # hsv_image[i][j][2] = hsv_image[i][j][2] - (img_gray[i][j]/2)
-        hsv_image[i][j][2] = abs(hsv_image[i][j][2] - (((img_gray[i][j]/1)-hsvmin)/(hsvmax-hsvmin))*100)
-  print(hsv_image.shape)
-  return hsv_image.astype(np.uint8)
+    """
+    Adds a shadow effect to the wall overlay based on the original image's grayscale values.
+
+    Args:
+        img_gray (np.array): The grayscale version of the original image.
+        hsv_image (np.array): The image converted to HSV color space.
+        walloverlayarray (np.array): The wall overlay image.
+
+    Returns:
+        np.array: The HSV image with shadows applied.
+    """
+    h,w,_ =  hsv_image.shape
+    hsvmin = np.min(hsv_image[:,:,2])
+    hsvmax = np.max(hsv_image[:,:,2])
+    for i in prange(0,h):
+        for j in prange(0,w):
+            if(walloverlayarray[i][j].sum() > 0 ):
+                hsv_image[i][j][2] = abs(hsv_image[i][j][2] - (((img_gray[i][j]/1)-hsvmin)/(hsvmax-hsvmin))*100)
+    print('|INFO| The shape of the HSV image is:', hsv_image.shape)
+    return hsv_image.astype(np.uint8)
 
 def load_model():
+    """
+    Initializes and loads the MaskFormer model and feature extractor.
+
+    Returns:
+        None
+    """
     global feature_extractor,model,device
     # load MaskFormer fine-tuned on COCO panoptic segmentation
     if torch.cuda.is_available():
@@ -58,11 +95,23 @@ def load_model():
     feature_extractor = MaskFormerFeatureExtractor.from_pretrained("facebook/maskformer-swin-base-ade")
     model = MaskFormerForInstanceSegmentation.from_pretrained("facebook/maskformer-swin-base-ade")
     # model.to(device)
-    print("Model Successfully Loaded")
+    print("|INFO| Model Successfully Loaded")
     # image_processor = AutoImageProcessor.from_pretrained("facebook/maskformer-swin-base-ade")
     # model = MaskFormerForInstanceSegmentation.from_pretrained("facebook/maskformer-swin-base-ade")
 
 def infer(imagepath,designimgpath,outputpath,mode = 3):
+    """
+    Performs inference on an image to generate a segmentation mask for a specified feature.
+
+    Args:
+        imagepath (str): The path to the input image.
+        designimgpath (str): The path to the design image (unused in this function).
+        outputpath (str): The path to save the output mask image.
+        mode (int, optional): The label ID for the feature to segment. Defaults to 3 (floors).
+
+    Returns:
+        int: 1 if inference is successful, 0 otherwise.
+    """
     #mode 0 for walls
     #model 3 for floors
     #model 28 for carpet
@@ -89,6 +138,7 @@ def infer(imagepath,designimgpath,outputpath,mode = 3):
 
     # Checking if the requested feature is in the image 
     if (mode not in [info['label_id'] for info in result['segments_info']]):
+        print(f"|WARNING| The requested feature with mode {mode} was not found in the image.")
         return 0
 
     # Finding the id of the wall from the segment predictions
@@ -102,140 +152,33 @@ def infer(imagepath,designimgpath,outputpath,mode = 3):
     color_predicted_panoptic_map[predicted_panoptic_map == wallitemid ] = (255,0,0)
 
     plt.imsave(outputpath,color_predicted_panoptic_map)
-    print('Inference done!')
+    print('|INFO| Inference done!')
     if torch.cuda.is_available():
         model.to('cpu')
         del inputs,outputs,result
         torch.cuda.empty_cache()
-    print(torch.cuda.memory_allocated())
+    print('|INFO| CUDA memory allocated:', torch.cuda.memory_allocated())
     return 1
 
 def main():
-    imagepath = "../Floor-Overlay/inputRoom/room_01a80ef6-b94e-4f2d-8169-84f1b0ec3896.jpg"
-    designimgpath = 0
-    outputpath = "../Floor-Overlay/mask_out/mask_01a80ef6-b94e-4f2d-8169-84f1b0ec3896.jpg"
-    
-    load_model()
-    infer(imagepath, designimgpath, outputpath)
+    """
+    Main function to run the floor mask generation process.
+    It loads the model and performs inference on a sample image.
+    """
+    try:
+        image_path = "../Floor-Overlay/inputRoom/room_01a80ef6-b94e-4f2d-8169-84f1b0ec3896.jpg"
+        design_img_path = None # This parameter is not used in this specific file, so it's set to None for clarity.
+        output_path = "../Floor-Overlay/mask_out/mask_01a80ef6-b94e-4f2d-8169-84f1b0ec3896.jpg"
+        
+        load_model()
+        success = infer(image_path, design_img_path, output_path, mode=3)
+        
+        if success:
+            print(f"|OUTPUT| Floor mask successfully saved to: {output_path}")
+        else:
+            print(f"|ERROR| Failed to generate a floor mask for the image: {image_path}")
+    except Exception as e:
+        print(f"|ERROR| An unexpected error occurred: {e}")
 
 if __name__ == "__main__":
     main()
-
-#######################################################################################################################
-
-# from transformers import Mask2FormerImageProcessor, Mask2FormerForUniversalSegmentation
-# from PIL import Image
-# import numpy as np
-# import matplotlib.pyplot as plt
-# import torch
-# from numba import njit, prange
-# import os
-
-# # Optional: limit CUDA memory fragmentation
-# os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:512"
-
-# feature_extractor = None
-# model = None
-# device = torch.device('cpu')
-
-# # ----------------------------
-# # Numba-accelerated functions
-# # ----------------------------
-
-# @njit(parallel=True)
-# def create_wall_overlay(mask, dsgn, woverlay):
-#     w, h, _ = woverlay.shape
-#     dw, dh, _ = dsgn.shape
-#     for i in prange(0, w):
-#         for j in prange(0, h):
-#             if mask[i][j][0] == 255:
-#                 p = dsgn[i % dw][j % dh]
-#                 woverlay[i][j] = p
-#     return woverlay
-
-# @njit(parallel=True)
-# def create_output_image(imagearray, walloverlayarray):
-#     h, w, _ = walloverlayarray.shape
-#     for i in prange(0, h):
-#         for j in prange(0, w):
-#             if walloverlayarray[i][j].sum() > 0:
-#                 imagearray[i][j] = walloverlayarray[i][j]
-#     return imagearray.astype(np.uint8)
-
-# @njit(parallel=True)
-# def create_image_with_shadow(img_gray, hsv_image, walloverlayarray):
-#     h, w, _ = hsv_image.shape
-#     hsvmin = np.min(hsv_image[:, :, 2])
-#     hsvmax = np.max(hsv_image[:, :, 2])
-#     for i in prange(0, h):
-#         for j in prange(0, w):
-#             if walloverlayarray[i][j].sum() > 0:
-#                 hsv_image[i][j][2] = abs(hsv_image[i][j][2] - (((img_gray[i][j] / 1) - hsvmin) / (hsvmax - hsvmin)) * 100)
-#     return hsv_image.astype(np.uint8)
-
-# # ----------------------------
-# # Model loading
-# # ----------------------------
-
-# def load_model():
-#     global feature_extractor, model, device
-#     if torch.cuda.is_available():
-#         device = torch.device("cuda")
-#     feature_extractor = Mask2FormerImageProcessor.from_pretrained("facebook/mask2former-swin-large-ade-semantic")
-#     model = Mask2FormerForUniversalSegmentation.from_pretrained("facebook/mask2former-swin-large-ade-semantic")
-#     print("Mask2Former model loaded.")
-
-# # ----------------------------
-# # Inference
-# # ----------------------------
-
-# def infer(imagepath, designimgpath, outputpath, mode=3):
-#     global feature_extractor, model, device
-
-#     if torch.cuda.is_available():
-#         torch.cuda.empty_cache()
-#     model.to(device)
-
-#     image = Image.open(imagepath).convert('RGB')
-#     inputs = feature_extractor(images=image, return_tensors="pt").to(device)
-
-#     with torch.no_grad():
-#         outputs = model(**inputs)
-
-#     # Semantic segmentation result: 2D class ID map
-#     result = feature_extractor.post_process_semantic_segmentation(outputs, target_sizes=[image.size[::-1]])[0]
-#     predicted_map = result.cpu().numpy()
-
-#     if mode not in predicted_map:
-#         print(f"Class ID {mode} not found in output.")
-#         return 0
-
-#     # Generate RGB mask
-#     mask = np.zeros((predicted_map.shape[0], predicted_map.shape[1], 3), dtype=np.uint8)
-#     mask[predicted_map == mode] = (255, 0, 0)  # Red mask
-
-#     plt.imsave(outputpath, mask)
-#     print("Inference complete and mask saved.")
-
-#     if torch.cuda.is_available():
-#         model.to('cpu')
-#         del inputs, outputs, result
-#         torch.cuda.empty_cache()
-#         print(f"GPU memory cleaned. Remaining: {torch.cuda.memory_allocated() / (1024 ** 2):.2f} MB")
-
-#     return 1
-
-# # ----------------------------
-# # Main
-# # ----------------------------
-
-# def main():
-#     imagepath = "../Floor-Overlay/inputRoom/room_01a80ef6-b94e-4f2d-8169-84f1b0ec3896.jpg"
-#     designimgpath = 0
-#     outputpath = "../Floor-Overlay/mask_out/mask_01a80ef6-b94e-4f2d-8169-84f1b0ec3896.jpg"
-    
-#     load_model()
-#     infer(imagepath, designimgpath, outputpath)
-
-# if __name__ == "__main__":
-#     main()

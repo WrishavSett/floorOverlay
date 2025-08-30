@@ -7,6 +7,16 @@ import pandas as pd
 # from scale_and_overlay import scale_carpet
 
 def carpet_circle(carpet_img_path, temp_path="../Floor-Overlay/temporary"):
+    """
+    Crops a carpet image into a circle.
+
+    Args:
+        carpet_img_path (str): The path to the input carpet image.
+        temp_path (str): The path to the temporary directory.
+
+    Returns:
+        str: The path to the saved circular carpet image.
+    """
     # scaled_carpet_img_path = scale_carpet(room_img_path, carpet_img_path)
     # scaled_carpet_img = cv2.imread(scaled_carpet_img_path)
     
@@ -50,18 +60,28 @@ def carpet_circle(carpet_img_path, temp_path="../Floor-Overlay/temporary"):
 
     cropped_carpet_path = os.path.join(temp_path, "carpet_circle.jpg")
     cv2.imwrite(cropped_carpet_path, cropped_rgb)
-    print(f"016 Circle-cropped image saved as JPG to {cropped_carpet_path}")
+    print(f"|INFO| Circle-cropped image saved as JPG to {cropped_carpet_path}")
 
     return cropped_carpet_path
 
 def carpet_ellipse_and_center(carpet_img_path, temp_path="../Floor-Overlay/temporary"):
+    """
+    Transforms a circular carpet image into an ellipse with a 3D perspective and finds its center.
+
+    Args:
+        carpet_img_path (str): The path to the input carpet image.
+        temp_path (str): The path to the temporary directory.
+
+    Returns:
+        tuple: A tuple containing the path to the saved elliptical carpet image and a tuple representing the center coordinates (x, y).
+    """
     cropped_carpet_path = carpet_circle(carpet_img_path)
     img = cv2.imread(cropped_carpet_path, cv2.IMREAD_UNCHANGED)
     height, width = img.shape[:2]
 
     # Parameters to control horizontal perspective distortion
-    squash = height * 0.3  # How much to push top and bottom inward
-    shift = width * 0.2    # Optional: adds a slight lean for realism
+    squash = height * 0.3
+    shift = width * 0.2
 
     # Source points (original corners)
     src_pts = np.float32([
@@ -73,10 +93,10 @@ def carpet_ellipse_and_center(carpet_img_path, temp_path="../Floor-Overlay/tempo
 
     # Destination points to stretch horizontally (simulate side view)
     dst_pts = np.float32([
-        [shift, squash],                          # top-left
-        [width - shift, squash],                 # top-right
-        [width, height - squash],                # bottom-right
-        [0, height - squash]                     # bottom-left
+        [shift, squash],
+        [width - shift, squash],
+        [width, height - squash],
+        [0, height - squash]
     ])
 
     # Get transformation matrix
@@ -94,7 +114,7 @@ def carpet_ellipse_and_center(carpet_img_path, temp_path="../Floor-Overlay/tempo
         alpha_channel = warped[:, :, 3]
         coords = np.column_stack(np.where(alpha_channel > 0))
         if coords.size == 0:
-            center = (width // 2, height // 2)  # fallback
+            center = (width // 2, height // 2)
         else:
             center_y, center_x = coords.mean(axis=0)
             center = (int(center_x), int(center_y))
@@ -108,33 +128,43 @@ def carpet_ellipse_and_center(carpet_img_path, temp_path="../Floor-Overlay/tempo
             center_y = int(moments["m01"] / moments["m00"])
             center = (center_x, center_y)
         else:
-            center = (width // 2, height // 2)  # fallback
+            center = (width // 2, height // 2)
 
-    print(f"016 Center of the ellipse: {center}")
+    print(f"|INFO| Center of the ellipse: {center}")
 
-
-    # output_name = "carpet_ellipse.png"
-    # carpet_ellipse_path = os.path.join(temp_path, output_name)
-    # cv2.imwrite(carpet_ellipse_path, warped)
-    # print(f"016 Horizontally-stretched 3D perspective carpet saved to {carpet_ellipse_path}")
 
     # Replace transparent areas with black for JPG output
     if warped.shape[2] == 4:
         alpha_channel = warped[:, :, 3]
         rgb_channels = warped[:, :, :3]
         mask = alpha_channel == 0
-        rgb_channels[mask] = [0, 0, 0]  # Set transparent pixels to black
-        warped = rgb_channels  # Drop alpha
+        rgb_channels[mask] = [0, 0, 0]
+        warped = rgb_channels
 
     output_name = "carpet_ellipse.jpg"
     carpet_ellipse_path = os.path.join(temp_path, output_name)
     cv2.imwrite(carpet_ellipse_path, warped)
-    print(f"016 Horizontally-stretched 3D perspective carpet saved to {carpet_ellipse_path}")
+    print(f"|INFO| Horizontally-stretched 3D perspective carpet saved to {carpet_ellipse_path}")
 
     return carpet_ellipse_path, center
 
 def main():
-    carpet_ellipse_and_center("../Floor-Overlay/inputCarpet/carpet2.jpg")
+    """
+    Main function to demonstrate the use of carpet_ellipse_and_center.
+    """
+    carpet_img_path = "../Floor-Overlay/sample_images2/carpets/carpet2.jpg"
+    
+    # Check if the file exists before processing
+    if not os.path.exists(carpet_img_path):
+        print(f"|ERROR| Carpet image not found at: {carpet_img_path}")
+        return
+
+    # Process the carpet and get the result and center
+    elliptical_carpet_path, center_coords = carpet_ellipse_and_center(carpet_img_path)
+    
+    # Print the final output path and the detected center
+    print(f"|OUTPUT| Final elliptical carpet saved at: {elliptical_carpet_path}")
+    print(f"|OUTPUT| Ellipse center detected at: {center_coords}")
 
 if __name__ == "__main__":
     main()

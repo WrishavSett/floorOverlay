@@ -7,18 +7,30 @@ import numpy as np
 
 
 def scale_carpet(room_img_path, carpet_img_path, carpet_dimensions=None, temp_path="../Floor-Overlay/temporary"):
+    """
+    Scales a carpet image relative to a room image based on provided dimensions or a default ratio.
+
+    Args:
+        room_img_path (str): The path to the room image, used as a reference for scaling.
+        carpet_img_path (str): The path to the carpet image to be scaled.
+        carpet_dimensions (str, optional): The dimensions of the carpet in "width_ft/height_ft" format. Defaults to None.
+        temp_path (str): The temporary directory to save the scaled image.
+
+    Returns:
+        str: The path to the saved scaled carpet image.
+    """
     ref_image = cv2.imread(room_img_path)
     ref_height, ref_width = ref_image.shape[:2]
 
     if carpet_dimensions:
         try:
             width_ft, height_ft = map(float, carpet_dimensions.split("/"))
-            print(f"014 Scaling carpet with dimensions: {width_ft}ft x {height_ft}ft")
+            print(f"|INFO| Scaling carpet with dimensions: {width_ft}ft x {height_ft}ft")
             aspect_ratio = width_ft / height_ft
             max_height = max(1, ref_height // 3)
             max_width = int(max_height * aspect_ratio)
         except Exception as e:
-            print(f"014 Warning: Invalid carpet_dimensions format: {carpet_dimensions}. Using default scaling.")
+            print(f"|WARNING| Invalid carpet_dimensions format: {carpet_dimensions}. Using default scaling.")
             max_width = max(1, ref_width // 3)
             max_height = max(1, ref_height // 3)
     else:
@@ -38,33 +50,53 @@ def scale_carpet(room_img_path, carpet_img_path, carpet_dimensions=None, temp_pa
     os.makedirs(output_folder, exist_ok=True)
     scaled_carpet_path = os.path.join(output_folder, "scaled_carpet_image.jpg")
     cv2.imwrite(scaled_carpet_path, resized_img)
-    print(f"014 Resized image saved as {scaled_carpet_path} with dimensions {new_width}x{new_height}")
+    print(f"|INFO| Resized image saved as {scaled_carpet_path} with dimensions {new_width}x{new_height}")
     return scaled_carpet_path
 
 def create_black_image(room_img_path, temp_path="../Floor-Overlay/temporary"):
-    # Load the reference image to get its dimensions
+    """
+    Creates a black image with the same dimensions as a reference room image.
+
+    Args:
+        room_img_path (str): The path to the reference room image.
+        temp_path (str): The temporary directory to save the black image.
+
+    Returns:
+        str: The path to the saved black image.
+    """
     ref_img = cv2.imread(room_img_path)
     ref_height, ref_width = ref_img.shape[:2]
 
-    # Create a black image of the same dimensions
     black_img = np.zeros((ref_height, ref_width, 3), dtype=np.uint8)
 
-    # Ensure the "temporary" folder exists
     output_folder = temp_path
     os.makedirs(output_folder, exist_ok=True)
 
-    # Define output file path
     black_blank_img_path = os.path.join(output_folder, "black_blank_image.jpg")
 
-    # Save the black image
     cv2.imwrite(black_blank_img_path, black_img)
-    print(f"014 Black image saved as {black_blank_img_path} with dimensions {ref_width}x{ref_height}")
+    print(f"|INFO| Black image saved as {black_blank_img_path} with dimensions {ref_width}x{ref_height}")
 
     return black_blank_img_path
 
-
 def place_on_black(room_img_path, carpet_img_path, carpet_dimensions=None, temp_path="../Floor-Overlay/temporary"):
+    """
+    Places a scaled carpet image on a black background, centered on the floor mask's centroid.
+
+    Args:
+        room_img_path (str): The path to the room image.
+        carpet_img_path (str): The path to the carpet image.
+        carpet_dimensions (str, optional): The dimensions of the carpet for scaling. Defaults to None.
+        temp_path (str): The temporary directory to save intermediate and final images.
+
+    Returns:
+        str: The path to the saved image with the carpet placed on the black background.
+    """
     center_of_mask = find_and_mark_floor_center(room_img_path, temp_path)
+    if not center_of_mask:
+        print("|ERROR| Could not find the center of the floor mask.")
+        return None
+        
     x, y = center_of_mask
     background_path = create_black_image(room_img_path, temp_path)
     foreground_path = scale_carpet(room_img_path, carpet_img_path, carpet_dimensions=carpet_dimensions, temp_path=temp_path)
@@ -95,15 +127,21 @@ def place_on_black(room_img_path, carpet_img_path, carpet_dimensions=None, temp_
     background[y1_start:y1_end, x1_start:x1_end] = foreground[:y1_end - y1_start, :x1_end - x1_start]
     overlayed_binary_carpet_path = os.path.join(temp_path, "overlayed_carpet.jpg")
     cv2.imwrite(overlayed_binary_carpet_path, background)
-    print(f"014 Image saved as {overlayed_binary_carpet_path}")
+    print(f"|INFO| Image saved as {overlayed_binary_carpet_path}")
     return overlayed_binary_carpet_path
 
 def main():
+    """
+    Main function to demonstrate the scaling and overlaying of a carpet onto a room image.
+    """
     room_img_path = "D:/Wrishav/Floor-Overlay/inputRoom/room4.jpg"
     carpet_img_path = "D:/Wrishav/Floor-Overlay/carpet/carpet2.jpg"
 
     overlayed_binary_carpet_path = place_on_black(room_img_path, carpet_img_path)
-    print(f"Overlayed Binary Carpet Image Path: {overlayed_binary_carpet_path}")
+    if overlayed_binary_carpet_path:
+        print(f"|OUTPUT| Overlayed Binary Carpet Image Path: {overlayed_binary_carpet_path}")
+    else:
+        print("|ERROR| Failed to create the overlayed binary carpet image.")
 
 if __name__ == "__main__":
     main()
