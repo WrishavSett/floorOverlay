@@ -5,7 +5,7 @@ import requests
 import numpy as np
 from io import BytesIO
 
-from src.main import *
+from main import *
 
 def scale_room_image(
         room_image_path,

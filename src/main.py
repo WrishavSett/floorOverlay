@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from transformers import AutoImageProcessor, MaskFormerModel
 from transformers import MaskFormerFeatureExtractor, MaskFormerForInstanceSegmentation
 
-from src.utils import *
+from utils import *
 
 model = None
 feature_extractor = None

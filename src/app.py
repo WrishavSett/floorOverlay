@@ -9,8 +9,8 @@ from flask_cors import CORS
 from flask import Flask, request, jsonify
 
 # External imports from your modules
-from src.utils import *
-from src.main import *
+from utils import *
+from main import *
 
 # Initialize the Flask application
 app = Flask(__name__)

@@ -3,8 +3,8 @@ import base64
 import requests
 from itertools import product
 
-from src.utils import *
-from src.main import *
+from utils import *
+from main import *
 
 # Base URL of Flask server
 BASE_URL = "http://127.0.0.1:5001"
